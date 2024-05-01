@@ -5,8 +5,9 @@ import retrofit2.http.Query
 private const val API_KEY="3b6eNighxPn-ABVRnc7P1ZrlguRVwZiZmmfEm9mjcXU"
 interface UnsplashApi {
     @GET("photos/?")
-    suspend fun fetchPhotos(): List<PhotoItem>
+    suspend fun fetchPhotos(): Photos
+
     @GET("search/photos/?")
-    suspend fun searchPhoto(@Query("query") query : String? ) : com.hd1998.photofetch.api.Result
+    suspend fun searchPhoto(@Query("query") query : String? ) : Result
 
 }

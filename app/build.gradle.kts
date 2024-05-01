@@ -74,4 +74,8 @@ dependencies {
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.paging.runtime)
+    implementation(libs.retrofit)
+    implementation(libs.androidx.paging.runtime.v212)
+    implementation(libs.logging.interceptor)
+    implementation (libs.converter.moshi)
 }
