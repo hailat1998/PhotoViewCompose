@@ -1,7 +1,7 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
-    kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
 }
 
@@ -51,9 +51,7 @@ android {
     }
 }
 
-kapt {
-    correctErrorTypes = true
-}
+
 
 dependencies {
     implementation(libs.androidx.core.ktx)
@@ -72,10 +70,11 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
     implementation(libs.androidx.paging.runtime)
     implementation(libs.retrofit)
     implementation(libs.androidx.paging.runtime.v212)
     implementation(libs.logging.interceptor)
     implementation (libs.converter.moshi)
+
 }
