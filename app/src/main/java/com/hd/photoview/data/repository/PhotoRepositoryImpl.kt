@@ -1,5 +1,6 @@
 package com.hd.photoview.data.repository
 
+import android.util.Log
 import com.hd.photoview.core.utils.Resources
 import com.hd.photoview.domain.repository.PhotoRepository
 import com.hd1998.photofetch.api.Photos
@@ -20,14 +21,19 @@ class PhotoRepositoryImpl @Inject constructor(val unsplashApi : UnsplashApi) : P
           val remoteData = try {
               unsplashApi.fetchPhotos()
           }catch(e: Exception){
+              emit(Resources.Error("Couldn't load any photo"))
               println(e)
               null
           }
           if(remoteData == null){
+
               emit(Resources.Loading(false))
           }
           remoteData.let{
               emit(Resources.Success(data = it))
+              println(it)
+              Log.i("From Data", "$it")
+              emit(Resources.Loading(false))
           }
        }
     }
@@ -38,14 +44,18 @@ class PhotoRepositoryImpl @Inject constructor(val unsplashApi : UnsplashApi) : P
             val remoteData = try {
                 unsplashApi.searchPhoto(query)
             }catch(e: Exception){
+                emit(Resources.Error("Couldn't load any photo"))
                 println(e)
                 null
             }
             if(remoteData == null){
+
                 emit(Resources.Loading(false))
             }
             remoteData.let{
                 emit(Resources.Success(data = it))
+                println(it)
+                Log.i("From Data", "$it")
                 emit(Resources.Loading(false))
             }
         }
