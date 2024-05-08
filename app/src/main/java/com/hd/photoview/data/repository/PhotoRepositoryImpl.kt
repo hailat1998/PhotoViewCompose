@@ -2,10 +2,10 @@ package com.hd.photoview.data.repository
 
 import android.util.Log
 import com.hd.photoview.core.utils.Resources
+import com.hd.photoview.data.remote.dto.Photos
+import com.hd.photoview.data.remote.dto.Result
+import com.hd.photoview.data.remote.dto.UnsplashApi
 import com.hd.photoview.domain.repository.PhotoRepository
-import com.hd1998.photofetch.api.Photos
-import com.hd1998.photofetch.api.Result
-import com.hd1998.photofetch.api.UnsplashApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
@@ -14,6 +14,7 @@ import javax.inject.Singleton
 @Singleton
 class PhotoRepositoryImpl @Inject constructor(val unsplashApi : UnsplashApi) : PhotoRepository {
     override suspend fun getPhotos(): Flow<Resources<Photos>> {
+        Log.i("Images" , "called get photo")
       return flow{
 
           emit(Resources.Loading(true))

@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.hd.photoview.core.utils.Resources
 import com.hd.photoview.domain.repository.PhotoRepository
-import com.hd1998.photofetch.api.PhotoItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject

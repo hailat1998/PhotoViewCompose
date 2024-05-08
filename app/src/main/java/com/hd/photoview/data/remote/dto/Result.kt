@@ -1,4 +1,4 @@
-package com.hd1998.photofetch.api
+package com.hd.photoview.data.remote.dto
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass

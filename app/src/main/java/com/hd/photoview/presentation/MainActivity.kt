@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
+import com.hd.photoview.presentation.screens.HomeScreen
 import com.hd.photoview.presentation.screens.HomeScreenViewModel
 import com.hd.photoview.presentation.theme.PhotoViewTheme
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,9 +26,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel = hiltViewModel<HomeScreenViewModel>()
             PhotoViewTheme {
-             Surface {
-                 Text(text = "HD")
-             }
+            HomeScreen(state = viewModel.state){
+                viewModel.onEvents(it)
+            }
             }
         }
     }

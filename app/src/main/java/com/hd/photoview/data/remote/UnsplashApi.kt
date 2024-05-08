@@ -1,4 +1,5 @@
-package com.hd1998.photofetch.api
+package com.hd.photoview.data.remote.dto
+import com.hd.photoview.data.remote.dto.Photos
 import retrofit2.http.GET
 import retrofit2.http.Query
 

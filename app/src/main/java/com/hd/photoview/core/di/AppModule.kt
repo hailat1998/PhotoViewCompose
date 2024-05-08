@@ -1,6 +1,6 @@
 package com.hd.photoview.core.di
 
-import com.hd1998.photofetch.api.UnsplashApi
+import com.hd.photoview.data.remote.dto.UnsplashApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
