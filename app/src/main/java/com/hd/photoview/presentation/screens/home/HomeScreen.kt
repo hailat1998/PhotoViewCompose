@@ -1,4 +1,4 @@
-package com.hd.photoview.presentation.screens
+package com.hd.photoview.presentation.screens.home
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -23,12 +23,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import coil.compose.rememberAsyncImagePainter
 import com.hd.photoview.data.remote.dto.PhotoItem
 
 
 @Composable
-fun HomeScreen(state : HomeScreenState , onEvent: (HomeScreenEvents) -> Unit){
+fun HomeScreen(state : HomeScreenState, onEvent: (HomeScreenEvents) -> Unit){
     Scaffold(modifier = Modifier.fillMaxSize()) {
         Column(modifier = Modifier.fillMaxSize()){
             Button(onClick = { onEvent(HomeScreenEvents.LoadPhoto)  }) {
@@ -83,6 +84,7 @@ fun ImageItem(url: String) {
                 .height(170.dp)
         )
     }
+    AsyncImage(model = url, contentDescription = null)
 }
 
 

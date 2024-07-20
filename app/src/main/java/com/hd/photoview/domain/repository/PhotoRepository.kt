@@ -10,4 +10,6 @@ interface PhotoRepository {
 
     fun searchPhoto(query : String): Flow<Resources<Result>>
 
+
+    fun enqueueDownload(url: String)
 }
