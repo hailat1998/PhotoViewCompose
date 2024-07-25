@@ -7,6 +7,7 @@ import android.os.Environment
 import android.util.Log
 import androidx.core.content.ContextCompat.getSystemService
 import com.hd.photoview.core.utils.Resources
+import com.hd.photoview.data.remote.dto.PhotoItem
 import com.hd.photoview.data.remote.dto.Photos
 import com.hd.photoview.data.remote.dto.Result
 import com.hd.photoview.data.remote.dto.UnsplashApi
@@ -20,21 +21,23 @@ import javax.inject.Singleton
 @Singleton
 class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : UnsplashApi,
                                               @ApplicationContext private val context: Context ) : PhotoRepository {
-    override suspend fun getPhotos(): Flow<Resources<Photos>> {
+    override suspend fun getPhotos(): Flow<Resources<List<PhotoItem>>> {
         Log.i("Images" , "called get photo")
       return flow{
 
           emit(Resources.Loading(true))
 
           val remoteData = try {
-              unsplashApi.fetchPhotos()
+            val k =  unsplashApi.fetchPhotos()
+
+              Log.d("Photos", k.toString())
+              k
           }catch(e: Exception){
               emit(Resources.Error("Couldn't load any photo"))
               println(e)
               null
           }
           if(remoteData == null){
-
               emit(Resources.Loading(false))
           }
           remoteData.let{

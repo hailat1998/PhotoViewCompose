@@ -22,21 +22,21 @@ object AppModule {
     @Provides
     @Singleton
     fun providePhotos(): UnsplashApi {
-       return Retrofit.Builder()
-           .baseUrl("https://api.unsplash.com/")
-           .addConverterFactory(MoshiConverterFactory.create())
-           .client(
-               OkHttpClient.Builder()
-                   .connectTimeout(30, TimeUnit.SECONDS)
-                   .readTimeout(30, TimeUnit.SECONDS)
-                   .writeTimeout(30, TimeUnit.SECONDS)
-                   .addInterceptor(HttpLoggingInterceptor().apply {
-                       level = HttpLoggingInterceptor.Level.BODY
-                   }).build()
-           )
-           .build()
-           .create(UnsplashApi::class.java)
-   }
+        return Retrofit.Builder()
+            .baseUrl("https://api.unsplash.com/")
+            .addConverterFactory(MoshiConverterFactory.create())
+            .client(
+                OkHttpClient.Builder()
+                    .connectTimeout(60, TimeUnit.SECONDS)
+                    .readTimeout(60, TimeUnit.SECONDS)
+                    .writeTimeout(60, TimeUnit.SECONDS)
+                    .addInterceptor(HttpLoggingInterceptor().apply {
+                        level = HttpLoggingInterceptor.Level.BODY
+                    }).build()
+            )
+            .build()
+            .create(UnsplashApi::class.java)
+    }
 
     @Provides
     @Singleton

@@ -5,7 +5,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.kapt")
-
+    alias(libs.plugins.compose.compiler)
 }
 
 
@@ -53,6 +53,7 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
 }
 
 
@@ -135,4 +136,6 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.logging.interceptor)
     implementation(libs.converter.moshi)
+    ksp(libs.moshi.kotlin.codegen)
+
 }

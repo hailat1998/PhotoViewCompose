@@ -1,3 +1,9 @@
 package com.hd.photoview.domain.model
 
-data class PhotoHD(val src : String , val description : String , val id : String)
+import androidx.compose.runtime.Immutable
+
+
+@Immutable
+data class PhotoHD(val src : String ,
+                   val description : String?,
+                   val id : String)

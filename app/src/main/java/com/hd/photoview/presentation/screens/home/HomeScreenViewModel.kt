@@ -10,13 +10,18 @@ import com.hd.photoview.core.utils.Resources
 import com.hd.photoview.domain.repository.PhotoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeScreenViewModel @Inject constructor( private val photoRepository: PhotoRepository,
     @IoDispatcher private val coroutineDispatcher: CoroutineDispatcher) : ViewModel() {
-  var  state by mutableStateOf(HomeScreenState())
+
+
+  private val  _state = MutableStateFlow(HomeScreenState())
+    val state get() = _state.asStateFlow()
 
 
     fun onEvents(event : HomeScreenEvents){
@@ -34,19 +39,23 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
         }
     }
 
+    init {
+        load()
+    }
+
     private fun load(){
         viewModelScope.launch(coroutineDispatcher) {
             photoRepository.getPhotos().collect{
                 when(it){
                    is Resources.Error -> {
-                       state = state.copy(isLoading = false)
+                       _state.value = _state.value.copy(isLoading = false)
                    }
                     is Resources.Loading -> {
-                        state = state.copy(isLoading = it.isLoading)
+                        _state.value = _state.value.copy(isLoading = it.isLoading)
                     }
                     is Resources.Success -> {
                        it.data?.let{  photos ->
-                           state = state.copy(listPhoto = photos.photoItems)
+                           _state.value = _state.value.copy(listPhoto = it.data)
                        }
                     }
                 }
@@ -59,14 +68,14 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
          photoRepository.searchPhoto(query).collect{
              when(it){
                  is Resources.Error -> {
-                     state = state.copy(isLoading = false)
+                     _state.value = _state.value.copy(isLoading = false)
                  }
                  is Resources.Loading -> {
-                     state = state.copy(isLoading = it.isLoading)
+                     _state.value = _state.value.copy(isLoading = it.isLoading)
                  }
                  is Resources.Success -> {
                      it.data?.let{  photos ->
-                         state = state.copy(listPhoto = photos.photoItems)
+                         _state.value = _state.value.copy(listPhoto = photos.photoItems)
                      }
                  }
              }

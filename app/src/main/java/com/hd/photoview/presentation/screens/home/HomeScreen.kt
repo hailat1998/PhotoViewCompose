@@ -48,7 +48,6 @@ fun HomeScreen(state : HomeScreenState, onEvent: (HomeScreenEvents) -> Unit){
                 }
             }
         }
-
     }
 }
 
@@ -60,7 +59,7 @@ fun GridListImages(list : List<PhotoItem>){
         modifier = Modifier.fillMaxSize()
     ) {
         items(list.size, {img -> list[img].id}) { img ->
-            ImageItem(list[img].urls.url)
+            ImageItem(list[img].urls.small)
         }
     }
 }
@@ -84,7 +83,7 @@ fun ImageItem(url: String) {
                 .height(170.dp)
         )
     }
-    AsyncImage(model = url, contentDescription = null)
+
 }
 
 
