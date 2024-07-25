@@ -74,14 +74,20 @@ fun ImageItem(url: String) {
             .clip(shape = RoundedCornerShape(12.dp))
             .background(color = MaterialTheme.colorScheme.onPrimaryContainer),
     ) {
-        Image(
-            painter = rememberAsyncImagePainter(model = url),
-            contentDescription = "",
-            contentScale = ContentScale.FillWidth,
+
+//        Image(
+//            painter = rememberAsyncImagePainter(model = url),
+//            contentDescription = "",
+//            contentScale = ContentScale.FillWidth,
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .height(170.dp)
+//        )
+        AsyncImage(model = url, contentDescription = null,
+            contentScale = ContentScale.FillWidth ,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(170.dp)
-        )
+                .height(170.dp))
     }
 
 }
