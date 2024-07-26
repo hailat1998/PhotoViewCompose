@@ -28,18 +28,21 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
     val state get() = _state.asStateFlow()
 
 
-    val photoList: Flow<PagingData<PhotoItem>> = photoRepository.getPhotosPaging()
+    var photoList: Flow<PagingData<PhotoItem>> = photoRepository.getPhotosPaging()
                                                    .cachedIn(viewModelScope)
-
+    var searchPhotoList: Flow<PagingData<PhotoItem>> = photoRepository.getPhotosPaging()
+                                                         .cachedIn(viewModelScope)
 
     fun onEvents(event : HomeScreenEvents){
         when(event){
             is HomeScreenEvents.LoadPhoto ->{
-              loadWithPaging()
+             photoList = loadWithPaging()
+                         .cachedIn(viewModelScope)
             }
-          is HomeScreenEvents.SearchPhoto -> {
-              searchWithPaging(event.query)
-          }
+           is HomeScreenEvents.SearchPhoto -> {
+              searchPhotoList = searchWithPaging(event.query)
+                                .cachedIn(viewModelScope)
+            }
             is HomeScreenEvents.Download -> {
                 downloadPhoto(event.url)
             }
