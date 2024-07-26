@@ -6,6 +6,9 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.core.content.ContextCompat.getSystemService
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.hd.photoview.core.utils.Resources
 import com.hd.photoview.data.remote.dto.PhotoItem
 import com.hd.photoview.data.remote.dto.Photos
@@ -21,6 +24,22 @@ import javax.inject.Singleton
 @Singleton
 class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : UnsplashApi,
                                               @ApplicationContext private val context: Context ) : PhotoRepository {
+
+
+           override fun getPhotosPaging(): Flow<PagingData<PhotoItem>>  = Pager(
+                    config = PagingConfig(pageSize = 10 , maxSize = 30),
+                 pagingSourceFactory = {PhotoPagingSource(unsplashApi)}
+             ).flow
+
+           override fun searchPhotoPaging(query: String): Flow<PagingData<PhotoItem>>  = Pager(
+               config = PagingConfig(pageSize = 10 , maxSize = 30),
+               pagingSourceFactory = {PhotoPagingSource(unsplashApi , query)}
+           ).flow
+
+
+
+
+
     override suspend fun getPhotos(): Flow<Resources<List<PhotoItem>>> {
         Log.i("Images" , "called get photo")
       return flow{
@@ -28,7 +47,7 @@ class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : Unsplash
           emit(Resources.Loading(true))
 
           val remoteData = try {
-            val k =  unsplashApi.fetchPhotos()
+            val k =  unsplashApi.fetchPhotos(1)
 
               Log.d("Photos", k.toString())
               k

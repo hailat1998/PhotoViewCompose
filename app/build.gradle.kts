@@ -138,4 +138,11 @@ dependencies {
     implementation(libs.converter.moshi)
     ksp(libs.moshi.kotlin.codegen)
 
+    /* *****************************************************
+     **** Pagination
+     ****************************************************** */
+
+    implementation(libs.androidx.paging.runtime)
+    implementation(libs.androidx.paging.compose)
+
 }

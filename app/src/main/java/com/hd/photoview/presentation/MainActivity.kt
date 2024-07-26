@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.hd.photoview.presentation.screens.home.HomeScreen
 import com.hd.photoview.presentation.screens.home.HomeScreenViewModel
 import com.hd.photoview.presentation.theme.PhotoViewTheme
@@ -17,8 +18,9 @@ class MainActivity : ComponentActivity() {
         setContent {
             val viewModel = hiltViewModel<HomeScreenViewModel>()
             PhotoViewTheme {
-                val state = viewModel.state.collectAsStateWithLifecycle()
-            HomeScreen(state = state.value){
+              //  val state = viewModel.state.collectAsStateWithLifecycle()
+                val photos = viewModel.photoList.collectAsLazyPagingItems()
+            HomeScreen(photos = photos){
                 viewModel.onEvents(it)
               }
             }

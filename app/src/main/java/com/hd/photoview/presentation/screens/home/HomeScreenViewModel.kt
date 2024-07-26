@@ -5,13 +5,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.hd.photoview.core.di.IoDispatcher
 import com.hd.photoview.core.utils.Resources
+import com.hd.photoview.data.remote.dto.PhotoItem
 import com.hd.photoview.domain.repository.PhotoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,13 +28,17 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
     val state get() = _state.asStateFlow()
 
 
+    val photoList: Flow<PagingData<PhotoItem>> = photoRepository.getPhotosPaging()
+                                                   .cachedIn(viewModelScope)
+
+
     fun onEvents(event : HomeScreenEvents){
         when(event){
             is HomeScreenEvents.LoadPhoto ->{
-                load()
+              loadWithPaging()
             }
           is HomeScreenEvents.SearchPhoto -> {
-              searchPhoto(event.query)
+              searchWithPaging(event.query)
           }
             is HomeScreenEvents.Download -> {
                 downloadPhoto(event.url)
@@ -40,7 +48,7 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
     }
 
     init {
-        load()
+        loadWithPaging()
     }
 
     private fun load(){
@@ -86,4 +94,7 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
     private fun downloadPhoto(url: String){
         photoRepository.enqueueDownload(url)
     }
+
+    private fun loadWithPaging() = photoRepository.getPhotosPaging()
+    private fun searchWithPaging(query: String) = photoRepository.searchPhotoPaging(query)
     }
