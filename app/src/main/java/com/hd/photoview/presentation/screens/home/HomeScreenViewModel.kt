@@ -10,6 +10,7 @@ import androidx.paging.cachedIn
 import com.hd.photoview.core.di.IoDispatcher
 import com.hd.photoview.core.utils.Resources
 import com.hd.photoview.data.remote.dto.PhotoItem
+import com.hd.photoview.domain.model.Photo
 import com.hd.photoview.domain.repository.PhotoRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -28,10 +29,9 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
     val state get() = _state.asStateFlow()
 
 
-    var photoList: Flow<PagingData<PhotoItem>> = photoRepository.getPhotosPaging()
-                                                   .cachedIn(viewModelScope)
-    var searchPhotoList: Flow<PagingData<PhotoItem>> = photoRepository.getPhotosPaging()
-                                                         .cachedIn(viewModelScope)
+   lateinit var photoList: Flow<PagingData<Photo>>
+
+   lateinit var searchPhotoList: Flow<PagingData<Photo>>
 
     fun onEvents(event : HomeScreenEvents){
         when(event){
@@ -44,58 +44,59 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
                                 .cachedIn(viewModelScope)
             }
             is HomeScreenEvents.Download -> {
-                downloadPhoto(event.url)
+                downloadPhoto(event.photo, event.selected)
             }
             else -> {}
         }
     }
 
     init {
-        loadWithPaging()
+      photoList = loadWithPaging()
+                 .cachedIn(viewModelScope)
     }
 
-    private fun load(){
-        viewModelScope.launch(coroutineDispatcher) {
-            photoRepository.getPhotos().collect{
-                when(it){
-                   is Resources.Error -> {
-                       _state.value = _state.value.copy(isLoading = false)
-                   }
-                    is Resources.Loading -> {
-                        _state.value = _state.value.copy(isLoading = it.isLoading)
-                    }
-                    is Resources.Success -> {
-                       it.data?.let{  photos ->
-                           _state.value = _state.value.copy(listPhoto = it.data)
-                       }
-                    }
-                }
-            }
-        }
-    }
+//    private fun load(){
+//        viewModelScope.launch(coroutineDispatcher) {
+//            photoRepository.getPhotos().collect{
+//                when(it){
+//                   is Resources.Error -> {
+//                       _state.value = _state.value.copy(isLoading = false)
+//                   }
+//                    is Resources.Loading -> {
+//                        _state.value = _state.value.copy(isLoading = it.isLoading)
+//                    }
+//                    is Resources.Success -> {
+//                       it.data?.let{  photos ->
+//                           _state.value = _state.value.copy(listPhoto = it.data)
+//                       }
+//                    }
+//                }
+//            }
+//        }
+//    }
 
-    private fun searchPhoto(query: String){
-     viewModelScope.launch(coroutineDispatcher) {
-         photoRepository.searchPhoto(query).collect{
-             when(it){
-                 is Resources.Error -> {
-                     _state.value = _state.value.copy(isLoading = false)
-                 }
-                 is Resources.Loading -> {
-                     _state.value = _state.value.copy(isLoading = it.isLoading)
-                 }
-                 is Resources.Success -> {
-                     it.data?.let{  photos ->
-                         _state.value = _state.value.copy(listPhoto = photos.photoItems)
-                     }
-                 }
-             }
-         }
-       }
-    }
+//    private fun searchPhoto(query: String){
+//     viewModelScope.launch(coroutineDispatcher) {
+//         photoRepository.searchPhoto(query).collect{
+//             when(it){
+//                 is Resources.Error -> {
+//                     _state.value = _state.value.copy(isLoading = false)
+//                 }
+//                 is Resources.Loading -> {
+//                     _state.value = _state.value.copy(isLoading = it.isLoading)
+//                 }
+//                 is Resources.Success -> {
+//                     it.data?.let{  photos ->
+//                         _state.value = _state.value.copy(listPhoto = photos.photoItems)
+//                     }
+//                 }
+//             }
+//         }
+//       }
+//    }
 
-    private fun downloadPhoto(url: String){
-        photoRepository.enqueueDownload(url)
+    private fun downloadPhoto(photo: Photo, selectedQ: String){
+        photoRepository.enqueueDownload(photo , selectedQ)
     }
 
     private fun loadWithPaging() = photoRepository.getPhotosPaging()

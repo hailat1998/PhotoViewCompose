@@ -145,4 +145,8 @@ dependencies {
     implementation(libs.androidx.paging.runtime)
     implementation(libs.androidx.paging.compose)
 
+    // https://mvnrepository.com/artifact/org.jsoup/jsoup
+    implementation("org.jsoup:jsoup:1.18.1")
+
+
 }

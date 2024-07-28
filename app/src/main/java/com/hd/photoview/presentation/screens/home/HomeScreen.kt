@@ -1,13 +1,12 @@
 package com.hd.photoview.presentation.screens.home
 
-import Urls
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,7 +22,10 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -50,16 +52,16 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
 import androidx.paging.compose.LazyPagingItems
 import coil.compose.AsyncImage
-import com.hd.photoview.data.remote.dto.PhotoItem
 import com.hd.photoview.R
+import com.hd.photoview.domain.model.Photo
 
 
 @Composable
 fun HomeScreen(
-    photos: LazyPagingItems<PhotoItem>,
+    photos: LazyPagingItems<Photo>,
     onEvent: (HomeScreenEvents) -> Unit
 ) {
-    val photoState = remember{ mutableStateOf(PhotoItem(urls = Urls("", " ", ""), null , "12345" )) }
+    val photoState = remember{ mutableStateOf(Photo("123", " ", "", "" , "12345" )) }
     val showDialog = remember { mutableStateOf(false) }
     val isInSearch = remember { mutableStateOf(false ) }
     Scaffold(modifier = Modifier.fillMaxSize(),
@@ -83,15 +85,15 @@ fun HomeScreen(
             }
         }
         if(showDialog.value){
-            PhotoDialog(photoItem = photoState, onDismissRequest = { showDialog.value = false }, onEvent = onEvent)
+            PhotoDialog(photo = photoState, onDismissRequest = { showDialog.value = false }, onEvent = onEvent)
         }
     }
 }
 
 @Composable
 fun GridListImages(
-    photos: LazyPagingItems<PhotoItem>,
-    photoState: MutableState<PhotoItem>,
+    photos: LazyPagingItems<Photo>,
+    photoState: MutableState<Photo>,
     showDialog: MutableState<Boolean>,
     onEvent: (HomeScreenEvents) -> Unit,
 ) {
@@ -112,7 +114,7 @@ fun GridListImages(
         items(photos.itemCount) { index ->
             val photo = photos[index]
             photo?.let {
-                ImageItem(photo.urls.small  ){
+                ImageItem(photo.small  ){
                      photoState.value = photo
                     showDialog.value = true
                 }
@@ -145,12 +147,17 @@ fun ImageItem(url: String ,  showDialog:() -> Unit ) {
 
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PhotoDialog(
-   photoItem: MutableState<PhotoItem> ,
+    photo: MutableState<Photo>,
     onDismissRequest: () -> Unit,
     onEvent: (HomeScreenEvents) -> Unit
 ) {
+    var selected by remember { mutableStateOf("") }
+    var expanded by remember { mutableStateOf(false) }
+    val menuItems = listOf("full", "regular", "small")
+
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = {
@@ -161,15 +168,50 @@ fun PhotoDialog(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Row(horizontalArrangement = Arrangement.End){
-                    Icon(painterResource(id = R.drawable.baseline_download_24) , null)
+                Row {
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(text = "Quality")
+                    ExposedDropdownMenuBox(
+                        expanded = expanded,
+                        onExpandedChange = { expanded = !expanded }
+                    ) {
+                        TextField(
+                            value = selected,
+                            onValueChange = {},
+                            readOnly = true,
+                            trailingIcon = {
+                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                            },
+                            modifier = Modifier.menuAnchor(),
+                            textStyle = MaterialTheme.typography.titleMedium
+                        )
+                        ExposedDropdownMenu(
+                            expanded = expanded,
+                            onDismissRequest = { expanded = false }
+                        ) {
+                            menuItems.forEach { q ->
+                                DropdownMenuItem(
+                                    text = { Text(text = q) },
+                                    onClick = {
+                                        selected = q
+                                        expanded = false
+                                    }
+                                )
+                            }
+                        }
+                    }
+
+                    Icon(painterResource(id = R.drawable.baseline_download_24) , null,
+                        modifier = Modifier
+                            .clickable { onEvent.invoke(HomeScreenEvents.Download(photo.value, selected)) }
+                            .padding(12.dp))
                     Icon(painterResource(id = R.drawable.public_24px) ,
-                        null, tint = Color.Black,
-                        modifier = Modifier.
-                          clickable { onEvent.invoke(HomeScreenEvents.Download(photoItem.value.urls.full)) })
+                        null, tint = Color.Black, modifier = Modifier.padding(12.dp)
+                       )
                 }
+
                 AsyncImage(
-                    model= photoItem.value.urls.full,
+                    model= photo.value.small,
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -221,8 +263,11 @@ fun TopBrSearch(onEvent: (HomeScreenEvents) -> Unit , isInSearch: MutableState<B
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopBrNormal(isInSearch: MutableState<Boolean>){
-    TopAppBar(title = { Text( text = "Unsplash")},
+    TopAppBar(title = { Text( text = "Unsplash") },
         actions = {Icon(Icons.Default.Search , 
             null,
-            modifier = Modifier.clickable { isInSearch.value = true  })})
+            modifier = Modifier.clickable { isInSearch.value = true  }
+        )
+        }
+    )
 }

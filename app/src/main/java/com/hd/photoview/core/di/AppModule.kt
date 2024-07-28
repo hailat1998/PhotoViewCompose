@@ -43,6 +43,11 @@ object AppModule {
     @IoDispatcher
     fun providesDispatcherIO(): CoroutineDispatcher = Dispatchers.IO
 
+    @Provides
+    @Singleton
+    fun provideOkhttp(): OkHttpClient = OkHttpClient()
+
+
 }
 
 
