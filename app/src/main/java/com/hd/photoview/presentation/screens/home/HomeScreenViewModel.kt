@@ -17,6 +17,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,6 +25,8 @@ import javax.inject.Inject
 class HomeScreenViewModel @Inject constructor( private val photoRepository: PhotoRepository,
     @IoDispatcher private val coroutineDispatcher: CoroutineDispatcher) : ViewModel() {
 
+
+        private val list = mutableListOf<Photo>()
 
   private val  _state = MutableStateFlow(HomeScreenState())
     val state get() = _state.asStateFlow()
@@ -101,4 +104,8 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
 
     private fun loadWithPaging() = photoRepository.getPhotosPaging()
     private fun searchWithPaging(query: String) = photoRepository.searchPhotoPaging(query)
+
+    private fun getPhotoById(id: String){
+
+    }
     }

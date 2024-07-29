@@ -6,6 +6,9 @@ plugins {
     id("com.google.dagger.hilt.android")
     id("org.jetbrains.kotlin.kapt")
     alias(libs.plugins.compose.compiler)
+    id("androidx.navigation.safeargs.kotlin")
+    alias(libs.plugins.jetbrains.kotlin.serialization)
+    id("kotlin-parcelize")
 }
 
 
@@ -148,5 +151,10 @@ dependencies {
     // https://mvnrepository.com/artifact/org.jsoup/jsoup
     implementation("org.jsoup:jsoup:1.18.1")
 
-
+    /*
+    Navigation
+     */
+    implementation("androidx.navigation:navigation-fragment-ktx:2.8.0-beta06")
+    implementation("androidx.navigation:navigation-ui-ktx:2.8.0-beta06")
+    implementation(libs.kotlinx.serialization.json)
 }

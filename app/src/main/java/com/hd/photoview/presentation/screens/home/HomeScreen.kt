@@ -169,7 +169,6 @@ fun PhotoDialog(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Row {
-                    Spacer(modifier = Modifier.weight(1f))
                     Text(text = "Quality")
                     ExposedDropdownMenuBox(
                         expanded = expanded,
