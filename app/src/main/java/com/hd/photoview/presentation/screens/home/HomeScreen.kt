@@ -59,10 +59,9 @@ import com.hd.photoview.domain.model.Photo
 @Composable
 fun HomeScreen(
     photos: LazyPagingItems<Photo>,
-    onEvent: (HomeScreenEvents) -> Unit
+    onEvent: (HomeScreenEvents) -> Unit,
+    toDetail: (photo: Photo) -> Unit
 ) {
-    val photoState = remember{ mutableStateOf(Photo("123", " ", "", "" , "12345" )) }
-    val showDialog = remember { mutableStateOf(false) }
     val isInSearch = remember { mutableStateOf(false ) }
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = { if(isInSearch.value){  TopBrSearch(onEvent = onEvent, isInSearch = isInSearch)} else { TopBrNormal(
@@ -80,22 +79,19 @@ fun HomeScreen(
                 } else if (photos.itemCount == 0) {
                     Text(text = "No images found")
                 } else {
-                    GridListImages(photos = photos, photoState, showDialog , onEvent = onEvent)
+                    GridListImages(photos = photos , onEvent = onEvent, toDetail = toDetail)
                 }
             }
         }
-        if(showDialog.value){
-            PhotoDialog(photo = photoState, onDismissRequest = { showDialog.value = false }, onEvent = onEvent)
-        }
+
     }
 }
 
 @Composable
 fun GridListImages(
     photos: LazyPagingItems<Photo>,
-    photoState: MutableState<Photo>,
-    showDialog: MutableState<Boolean>,
     onEvent: (HomeScreenEvents) -> Unit,
+    toDetail: (photo: Photo) -> Unit
 ) {
     val lazyGridState = rememberLazyGridState()
 
@@ -114,10 +110,7 @@ fun GridListImages(
         items(photos.itemCount) { index ->
             val photo = photos[index]
             photo?.let {
-                ImageItem(photo.small  ){
-                     photoState.value = photo
-                    showDialog.value = true
-                }
+                ImageItem(photo.small , photo ,toDetail = toDetail)
             }
         }
     }
@@ -125,13 +118,14 @@ fun GridListImages(
 
 
 @Composable
-fun ImageItem(url: String ,  showDialog:() -> Unit ) {
+fun ImageItem(url: String , photo: Photo ,  toDetail: (photo: Photo) -> Unit) {
     Box(
         modifier = Modifier
             .padding(6.dp)
             .fillMaxWidth()
             .clip(shape = RoundedCornerShape(12.dp))
-            .background(color = MaterialTheme.colorScheme.onPrimaryContainer),
+            .background(color = MaterialTheme.colorScheme.onPrimaryContainer)
+            .clickable { toDetail.invoke(photo) }            ,
     ) {
 
         AsyncImage(model = url, contentDescription = null,
@@ -139,10 +133,8 @@ fun ImageItem(url: String ,  showDialog:() -> Unit ) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(170.dp)
-                .clickable { showDialog.invoke() })
-
-
-      }
+                )
+          }
   }
 
 

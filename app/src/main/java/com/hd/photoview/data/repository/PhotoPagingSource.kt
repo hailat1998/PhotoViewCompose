@@ -16,7 +16,7 @@ class PhotoPagingSource @Inject constructor(private val unsplashApi: UnsplashApi
             val response  = if (query.isEmpty())unsplashApi.fetchPhotos(nextPageNumber).map{it.toPhoto()} else unsplashApi.searchPhoto(query).photoItems.map{it.toPhoto()}
              LoadResult.Page(
                 data = response,
-                prevKey = null,
+                prevKey = if(nextPageNumber == 1) null else nextPageNumber - 1,
                 nextKey = nextPageNumber + 1
             )
         }catch(e : Exception){
