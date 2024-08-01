@@ -17,7 +17,8 @@ fun WebView(url : String){
             webViewClient = WebViewClient()
             loadUrl(url)
         }
-    })
+    }
+    )
     
 }
 

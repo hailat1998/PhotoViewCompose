@@ -1,6 +1,9 @@
 package com.hd.photoview.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -15,8 +18,13 @@ import com.hd.photoview.presentation.screens.WebView
 import com.hd.photoview.presentation.screens.home.HomeScreen
 import com.hd.photoview.presentation.screens.home.HomeScreenEvents
 import com.hd.photoview.presentation.screens.home.HomeScreenViewModel
+import kotlinx.serialization.json.Json
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import java.nio.charset.StandardCharsets.UTF_8
 import kotlin.reflect.typeOf
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun MainHost(navHostController: NavHostController){
     val viewModel = hiltViewModel<HomeScreenViewModel>()
@@ -26,8 +34,10 @@ fun MainHost(navHostController: NavHostController){
         composable<Routes.Home> {
             val photos = viewModel.photoList.collectAsLazyPagingItems()
              HomeScreen(photos = photos, onEvent =  { viewModel.onEvents(it) }, toDetail = { it ->
-                 navHostController.navigate(Routes.DetailScreen(it))
-             })
+                 val photo = it.toDecoded()
+                 navHostController.navigate(Routes.DetailScreen(photo))
+                }
+             )
         }
 
         composable<Routes.WebScreen> { backStackEntry ->
@@ -38,9 +48,25 @@ fun MainHost(navHostController: NavHostController){
         composable<Routes.DetailScreen>( typeMap = mapOf(typeOf<Photo>() to
                 CustomNavType(Photo::class.java, Photo.serializer()))) { backStackEntry ->
             val parameters = backStackEntry.toRoute<Routes.DetailScreen>()
+
+
               PhotoDetail(photo = parameters.photo) {
                   viewModel.onEvents(it)
               }
         }
     }
+}
+
+
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+fun Photo.toDecoded():Photo{
+      return Photo(id = this.id.encodeString(), description = this.description.encodeString()
+      ,full = this.full.encodeString(), small = this.small.encodeString(), regular = this.regular.encodeString())
+}
+
+
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
+fun String.encodeString():String{
+    return URLEncoder.encode(this, UTF_8)
 }
