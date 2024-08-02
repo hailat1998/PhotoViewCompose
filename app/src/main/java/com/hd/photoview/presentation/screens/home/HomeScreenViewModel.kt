@@ -58,6 +58,13 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
                  .cachedIn(viewModelScope)
     }
 
+    private fun downloadPhoto(photo: Photo, selectedQ: String){
+        photoRepository.enqueueDownload(photo , selectedQ)
+    }
+
+    private fun loadWithPaging() = photoRepository.getPhotosPaging()
+    private fun searchWithPaging(query: String) = photoRepository.searchPhotoPaging(query)
+
 //    private fun load(){
 //        viewModelScope.launch(coroutineDispatcher) {
 //            photoRepository.getPhotos().collect{
@@ -98,14 +105,6 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
 //       }
 //    }
 
-    private fun downloadPhoto(photo: Photo, selectedQ: String){
-        photoRepository.enqueueDownload(photo , selectedQ)
-    }
 
-    private fun loadWithPaging() = photoRepository.getPhotosPaging()
-    private fun searchWithPaging(query: String) = photoRepository.searchPhotoPaging(query)
 
-    private fun getPhotoById(id: String){
-
-    }
     }

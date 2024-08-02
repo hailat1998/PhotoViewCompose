@@ -9,8 +9,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 
 @Composable
-fun WebView(url : String){
+fun WebView(id : String, desc: String){
     val context = LocalContext.current as Activity
+    val url = "https://unsplash.com/photos/" + desc + "-" + id
     AndroidView({
         WebView( context).apply {
             settings.javaScriptEnabled = true
@@ -29,6 +30,5 @@ fun WebView(url : String){
 @Composable
 fun HD(){
     val url = "https://medium.com/@sahar.asadian90/webview-in-jetpack-compose-71f237873c2e"
-    
-    WebView(url = url)
+//WebView(url = url)
 }

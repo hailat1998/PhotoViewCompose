@@ -16,7 +16,7 @@ sealed class Routes{
     data object Home: Routes()
 
     @Serializable
-    data class WebScreen(val url: String): Routes()
+    data class WebScreen(val alt_desc: String, val id: String): Routes()
 
     @Serializable
     data class DetailScreen(val photo: Photo): Routes()

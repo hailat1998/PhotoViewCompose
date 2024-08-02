@@ -107,6 +107,8 @@ class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : Unsplash
             .url(url)
             .build()
 
+
+
             okHttpClient.newCall(requestW).enqueue(object : okhttp3.Callback {
 
 
@@ -130,8 +132,10 @@ class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : Unsplash
                             setTitle("Downloading $sanitizedTitle")
                             setDescription("File is being downloaded")
                             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "$sanitizedTitle.jpg")
+                            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
+                                if(sanitizedTitle.isNotEmpty())"$sanitizedTitle.jpg" else "unsplash_pucture.jpg")
                             setMimeType("image/jpeg")
+                                .
                             setAllowedOverMetered(true)
                             setAllowedOverRoaming(false)
                         }

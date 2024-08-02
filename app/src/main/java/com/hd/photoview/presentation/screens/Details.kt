@@ -34,50 +34,48 @@ import com.hd.photoview.presentation.screens.home.HomeScreenEvents
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit) {
-    var selected by remember { mutableStateOf("") }
+fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc: String,id: String) -> Unit) {
+    var selected by remember { mutableStateOf("full") }
     var expanded by remember { mutableStateOf(false) }
     val menuItems = listOf("full", "regular", "small")
     Surface {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth()
         ) {
-
-
-                Row {
-                    Text(text = "Quality")
-                    ExposedDropdownMenuBox(
+            Row {
+                Column {
+                Text(text = "Quality")
+                ExposedDropdownMenuBox(
+                    expanded = expanded,
+                    onExpandedChange = { expanded = !expanded }
+                ) {
+                    TextField(
+                        value = selected,
+                        onValueChange = {},
+                        readOnly = true,
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                        },
+                        modifier = Modifier.menuAnchor(),
+                        textStyle = MaterialTheme.typography.titleMedium
+                    )
+                    ExposedDropdownMenu(
                         expanded = expanded,
-                        onExpandedChange = { expanded = !expanded }
+                        onDismissRequest = { expanded = false }
                     ) {
-                        TextField(
-                            value = selected,
-                            onValueChange = {},
-                            readOnly = true,
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                            },
-                            modifier = Modifier.menuAnchor(),
-                            textStyle = MaterialTheme.typography.titleMedium
-                        )
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            menuItems.forEach { q ->
-                                DropdownMenuItem(
-                                    text = { Text(text = q) },
-                                    onClick = {
-                                        selected = q
-                                        expanded = false
-                                    }
-                                )
-                            }
+                        menuItems.forEach { q ->
+                            DropdownMenuItem(
+                                text = { Text(text = q) },
+                                onClick = {
+                                    selected = q
+                                    expanded = false
+                                }
+                            )
                         }
                     }
-
+                }
+            }
                     Icon(
                         painterResource(id = R.drawable.baseline_download_24), null,
                         modifier = Modifier
@@ -92,7 +90,12 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit) {
                             .padding(12.dp))
                     Icon(
                         painterResource(id = R.drawable.public_24px),
-                        null, tint = Color.Black, modifier = Modifier.padding(12.dp)
+                        null, tint = Color.Black, modifier = Modifier
+                            .padding(12.dp)
+                            .clickable {
+                                toWeb.invoke(photo.description ,photo.id)
+                            },
+
                     )
                 }
 
@@ -100,8 +103,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit) {
                     model = photo.small,
                     contentDescription = null,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
+                        .fillMaxSize(0.8f)
                         .padding(16.dp)
                 )
             }

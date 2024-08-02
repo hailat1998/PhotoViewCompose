@@ -42,7 +42,7 @@ fun MainHost(navHostController: NavHostController){
 
         composable<Routes.WebScreen> { backStackEntry ->
                val arg = backStackEntry.toRoute<Routes.WebScreen>()
-            WebView(url = arg.url)
+            WebView(id = arg.id, desc = arg.alt_desc)
         }
 
         composable<Routes.DetailScreen>( typeMap = mapOf(typeOf<Photo>() to
@@ -50,9 +50,12 @@ fun MainHost(navHostController: NavHostController){
             val parameters = backStackEntry.toRoute<Routes.DetailScreen>()
 
 
-              PhotoDetail(photo = parameters.photo) {
+              PhotoDetail(photo = parameters.photo , onEvent =  {
                   viewModel.onEvents(it)
-              }
+              }, toWeb = {
+                  navHostController.navigate(parameters.photo.id)
+                 }
+              )
         }
     }
 }
