@@ -1,6 +1,7 @@
 package com.hd.photoview.presentation.screens
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,7 @@ import com.hd.photoview.presentation.screens.home.HomeScreenEvents
 fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc: String,id: String) -> Unit) {
     var selected by remember { mutableStateOf("full") }
     var expanded by remember { mutableStateOf(false) }
+    val isdark = isSystemInDarkTheme()
     val menuItems = listOf("full", "regular", "small")
     Surface {
         Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -89,14 +91,16 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                                     )
                                 )
                             }
-                            .padding(start = 12.dp, end = 12.dp, top = 25.dp))
+                            .padding(start = 12.dp, end = 12.dp, top = 25.dp),
+                        tint =    if(isdark) Color.White else Color.Black)
                     Icon(
                         painterResource(id = R.drawable.public_24px),
-                        null, tint = Color.Black, modifier = Modifier
+                        null,  modifier = Modifier
                             .padding(start = 12.dp, end = 12.dp, top = 25.dp)
                             .clickable {
                                 toWeb.invoke(photo.description ,photo.id)
                             },
+                        tint =    if(isdark) Color.White else Color.Black
                         )
                      }
                   AsyncImage(
