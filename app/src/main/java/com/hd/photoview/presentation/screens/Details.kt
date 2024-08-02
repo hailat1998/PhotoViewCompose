@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -57,8 +58,9 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
                         },
-                        modifier = Modifier.menuAnchor(),
-                        textStyle = MaterialTheme.typography.titleMedium
+                        modifier = Modifier.menuAnchor().height(50.dp),
+                        textStyle = MaterialTheme.typography.titleMedium,
+                        shape = RoundedCornerShape(20.dp)
                     )
                     ExposedDropdownMenu(
                         expanded = expanded,
@@ -87,19 +89,17 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                                     )
                                 )
                             }
-                            .padding(12.dp))
+                            .padding(start = 12.dp, end = 12.dp, top = 25.dp))
                     Icon(
                         painterResource(id = R.drawable.public_24px),
                         null, tint = Color.Black, modifier = Modifier
-                            .padding(12.dp)
+                            .padding(start = 12.dp, end = 12.dp, top = 25.dp)
                             .clickable {
                                 toWeb.invoke(photo.description ,photo.id)
                             },
-
-                    )
-                }
-
-                AsyncImage(
+                        )
+                     }
+                  AsyncImage(
                     model = photo.small,
                     contentDescription = null,
                     modifier = Modifier

@@ -1,6 +1,7 @@
 package com.hd.photoview.presentation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
@@ -47,14 +48,17 @@ fun MainHost(navHostController: NavHostController){
 
         composable<Routes.DetailScreen>( typeMap = mapOf(typeOf<Photo>() to
                 CustomNavType(Photo::class.java, Photo.serializer()))) { backStackEntry ->
+
             val parameters = backStackEntry.toRoute<Routes.DetailScreen>()
 
+              Log.i("FROM NAV", parameters.photo.description)
 
               PhotoDetail(photo = parameters.photo , onEvent =  {
                   viewModel.onEvents(it)
-              }, toWeb = {
-                  navHostController.navigate(parameters.photo.id)
+              }, toWeb = { id, alt_desc ->
+                  navHostController.navigate(Routes.WebScreen(id, alt_desc))
                  }
+
               )
         }
     }

@@ -97,55 +97,69 @@ class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : Unsplash
     }
 
     override fun enqueueDownload(photo: Photo, selected: String) {
+
         val url = when(selected){
             "full" -> photo.full
             "small" -> photo.small
             else -> photo.regular
         }
 
-        val requestW = Request.Builder()
-            .url(url)
-            .build()
-
-
-
-            okHttpClient.newCall(requestW).enqueue(object : okhttp3.Callback {
-
-
-                override fun onFailure(call: okhttp3.Call, e: IOException) {
-                    e.printStackTrace()
-                }
-                override fun onResponse(call: okhttp3.Call, response: Response) {
-                    response.use {
-                        if (!it.isSuccessful) throw IOException("Unexpected code $response")
-
-
-                        val responseBody = response.body?.string()
-                        val document = Jsoup.parse(responseBody)
-                        val title = document.title()
-
-
-                        val sanitizedTitle = title.replace(Regex("[^a-zA-Z0-9\\.\\-]"), "_")
-
-
-                        val downloadRequest = DownloadManager.Request(Uri.parse(url)).apply {
-                            setTitle("Downloading $sanitizedTitle")
+//                val requestW = Request.Builder()
+//                               .url(url)
+//                               .build()
+//
+//
+//
+//            okHttpClient.newCall(requestW).enqueue(object : okhttp3.Callback {
+//
+//
+//                override fun onFailure(call: okhttp3.Call, e: IOException) {
+//                    e.printStackTrace()
+//                }
+//                override fun onResponse(call: okhttp3.Call, response: Response) {
+//                    response.use {
+//                        if (!it.isSuccessful) throw IOException("Unexpected code $response")
+//
+//
+//                        val responseBody = response.body?.string()
+//                        val document = Jsoup.parse(responseBody)
+//                        val title = document.title()
+//
+//
+//                        val sanitizedTitle = title.replace(Regex("[^a-zA-Z0-9\\.\\-]"), "_")
+//
+//
+//                        val downloadRequest = DownloadManager.Request(Uri.parse(url)).apply {
+//                            setTitle("Downloading $sanitizedTitle")
+//                            setDescription("File is being downloaded")
+//                            setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+//                            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
+//                                if(sanitizedTitle.isNotEmpty())"$sanitizedTitle.jpg" else "unsplash_pucture.jpg")
+//                            setMimeType("image/jpeg")
+//                            setAllowedOverMetered(true)
+//                            setAllowedOverRoaming(false)
+//                        }
+//
+//                        // Get the DownloadManager
+//                        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+//                        downloadManager.enqueue(downloadRequest)
+//                    }
+          //      }
+         //   }
+           // )
+        val downloadRequest = DownloadManager.Request(Uri.parse(url)).apply {
+                            setTitle("Downloading photo")
                             setDescription("File is being downloaded")
                             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                            setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS,
-                                if(sanitizedTitle.isNotEmpty())"$sanitizedTitle.jpg" else "unsplash_pucture.jpg")
-                            setMimeType("image/jpeg")
-                                .
-                            setAllowedOverMetered(true)
-                            setAllowedOverRoaming(false)
-                        }
+                           setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "unsplash_pucture+${photo.id}.jpg")
+                           setMimeType("image/jpeg")
+                           setAllowedOverMetered(true)
+                           setAllowedOverRoaming(false)
+                       }
 
                         // Get the DownloadManager
-                        val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
-                        downloadManager.enqueue(downloadRequest)
-                    }
-                }
-            }
-            )
+                       val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                         downloadManager.enqueue(downloadRequest)
+
     }
 }
