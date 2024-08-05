@@ -4,12 +4,16 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.hd.photoview.domain.model.Photo
 import com.hd.photoview.presentation.screens.CustomNavType
@@ -33,8 +37,10 @@ fun MainHost(navHostController: NavHostController){
 
 
         composable<Routes.Home> {
-            val photos = viewModel.photoList.collectAsLazyPagingItems()
-             HomeScreen(photos = photos, onEvent =  { viewModel.onEvents(it) }, toDetail = { it ->
+            val type = remember { mutableIntStateOf(1)  }
+            val query = remember{ mutableStateOf("") }
+            val photos: LazyPagingItems<Photo> = if(type.value == 1) viewModel.searchPhotoList.collectAsLazyPagingItems() else viewModel.photoList.collectAsLazyPagingItems()
+             HomeScreen(photos = photos, type, query ,onEvent =  { viewModel.onEvents(it) }, toDetail = { it ->
                  val photo = it.toDecoded()
                  navHostController.navigate(Routes.DetailScreen(photo))
                 }
@@ -49,16 +55,15 @@ fun MainHost(navHostController: NavHostController){
         composable<Routes.DetailScreen>( typeMap = mapOf(typeOf<Photo>() to
                 CustomNavType(Photo::class.java, Photo.serializer()))) { backStackEntry ->
 
-            val parameters = backStackEntry.toRoute<Routes.DetailScreen>()
+                val parameters = backStackEntry.toRoute<Routes.DetailScreen>()
 
-              Log.i("FROM NAV", parameters.photo.description)
+                Log.i("FROM NAV", parameters.photo.description)
 
               PhotoDetail(photo = parameters.photo , onEvent =  {
                   viewModel.onEvents(it)
               }, toWeb = { id, alt_desc ->
                   navHostController.navigate(Routes.WebScreen(id, alt_desc))
                  }
-
               )
         }
     }

@@ -154,7 +154,7 @@ class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : Unsplash
                        }
 
                         // Get the DownloadManager
-                       val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+                         val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                          downloadManager.enqueue(downloadRequest)
 
     }

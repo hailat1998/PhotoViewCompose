@@ -1,5 +1,7 @@
 package com.hd.photoview.presentation.screens.home
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -34,6 +36,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +49,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -59,13 +63,25 @@ import com.hd.photoview.domain.model.Photo
 @Composable
 fun HomeScreen(
     photos: LazyPagingItems<Photo>,
+    type: MutableIntState,
+    query: MutableState<String>,
     onEvent: (HomeScreenEvents) -> Unit,
     toDetail: (photo: Photo) -> Unit
 ) {
-    val isInSearch = remember { mutableStateOf(false ) }
+
+    val context = LocalContext.current as Activity
+
+   BackHandler {
+       if(type.intValue == 1){
+           type.intValue = 2
+       }else{
+          context.finish()
+       }
+   }
+
     Scaffold(modifier = Modifier.fillMaxSize(),
-        topBar = { if(isInSearch.value){  TopBrSearch(onEvent = onEvent, isInSearch = isInSearch)} else { TopBrNormal(
-            isInSearch = isInSearch
+        topBar = { if(type.intValue == 1){  TopBrSearch(onEvent = onEvent, query)} else { TopBrNormal(
+            type = type
         ) } }) {
         Column(modifier = Modifier.fillMaxSize()) {
             Box(
@@ -194,7 +210,14 @@ fun PhotoDialog(
 
                     Icon(painterResource(id = R.drawable.baseline_download_24) , null,
                         modifier = Modifier
-                            .clickable { onEvent.invoke(HomeScreenEvents.Download(photo.value, selected)) }
+                            .clickable {
+                                onEvent.invoke(
+                                    HomeScreenEvents.Download(
+                                        photo.value,
+                                        selected
+                                    )
+                                )
+                            }
                             .padding(12.dp))
                     Icon(painterResource(id = R.drawable.public_24px) ,
                         null, tint = Color.Black, modifier = Modifier.padding(12.dp)
@@ -224,9 +247,8 @@ fun PhotoDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBrSearch(onEvent: (HomeScreenEvents) -> Unit , isInSearch: MutableState<Boolean>){
+fun TopBrSearch(onEvent: (HomeScreenEvents) -> Unit , query: MutableState<String>){
     val focusRequester = remember { FocusRequester() }
-    var searchText by remember{ mutableStateOf("") }
     LaunchedEffect(Unit){
         focusRequester.requestFocus()
     }
@@ -234,17 +256,16 @@ fun TopBrSearch(onEvent: (HomeScreenEvents) -> Unit , isInSearch: MutableState<B
     TopAppBar(
         title = {
             TextField(
-                value = searchText,
-                onValueChange = { newText -> searchText = newText },
+                value = query.value,
+                onValueChange = { newText -> query.value = newText },
                 placeholder = { Text("Search...") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .focusRequester(focusRequester),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions ( onSearch = {
-                               onEvent.invoke(HomeScreenEvents.SearchPhoto(searchText))
-                                   isInSearch.value = false
-                       }
+                               onEvent.invoke(HomeScreenEvents.SearchPhoto(query.value))
+                           }
                 )
             )
         }
@@ -253,12 +274,12 @@ fun TopBrSearch(onEvent: (HomeScreenEvents) -> Unit , isInSearch: MutableState<B
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBrNormal(isInSearch: MutableState<Boolean>){
+fun TopBrNormal(type: MutableIntState){
     TopAppBar(title = { Text( text = "Unsplash") },
         actions = {Icon(Icons.Default.Search , 
             null,
-            modifier = Modifier.clickable { isInSearch.value = true  }
-        )
+            modifier = Modifier.clickable { type.value = 1  }
+            )
         }
     )
 }
