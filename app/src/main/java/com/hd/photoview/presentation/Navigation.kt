@@ -37,12 +37,19 @@ fun MainHost(navHostController: NavHostController){
 
 
         composable<Routes.Home> {
-            val type = remember { mutableIntStateOf(1)  }
+            val type = remember { mutableIntStateOf(2)  }
             val query = remember{ mutableStateOf("") }
-            val photos: LazyPagingItems<Photo> = if(type.value == 1) viewModel.searchPhotoList.collectAsLazyPagingItems() else viewModel.photoList.collectAsLazyPagingItems()
+            val photos: LazyPagingItems<Photo> = if(type.intValue == 1){
+                viewModel.onEvents(HomeScreenEvents.SearchPhoto(query.value))
+                viewModel.searchPhotoList.collectAsLazyPagingItems()
+            }else {
+                viewModel.onEvents(HomeScreenEvents.LoadPhoto)
+                viewModel.photoList.collectAsLazyPagingItems()}
              HomeScreen(photos = photos, type, query ,onEvent =  { viewModel.onEvents(it) }, toDetail = { it ->
                  val photo = it.toDecoded()
-                 navHostController.navigate(Routes.DetailScreen(photo))
+                 navHostController.navigate(Routes.DetailScreen(photo)){
+                     restoreState = true
+                 }
                 }
              )
         }

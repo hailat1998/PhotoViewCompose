@@ -9,9 +9,9 @@ import com.hd.photoview.domain.model.Photo
 import kotlinx.coroutines.flow.Flow
 
 interface PhotoRepository {
-    suspend fun getPhotos():Flow<Resources<List<PhotoItem>>>
+  //  suspend fun getPhotos():Flow<Resources<List<PhotoItem>>>
     fun getPhotosPaging(): Flow<PagingData<Photo>>
-    fun searchPhoto(query : String): Flow<Resources<Result>>
+   // fun searchPhoto(query : String): Flow<Resources<Result>>
     fun searchPhotoPaging(query: String): Flow<PagingData<Photo>>
     fun enqueueDownload(photo: Photo, selected: String)
 }

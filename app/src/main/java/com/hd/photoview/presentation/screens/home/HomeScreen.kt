@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -80,7 +79,7 @@ fun HomeScreen(
    }
 
     Scaffold(modifier = Modifier.fillMaxSize(),
-        topBar = { if(type.intValue == 1){  TopBrSearch(onEvent = onEvent, query)} else { TopBrNormal(
+        topBar = { if(type.intValue == 1){  TopBrSearch(onEvent = onEvent, query, type)} else { TopBrNormal(
             type = type
         ) } }) {
         Column(modifier = Modifier.fillMaxSize()) {
@@ -95,25 +94,28 @@ fun HomeScreen(
                 } else if (photos.itemCount == 0) {
                     Text(text = "No images found")
                 } else {
-                    GridListImages(photos = photos , onEvent = onEvent, toDetail = toDetail)
+                    GridListImages(photos = photos , type, query, onEvent = onEvent, toDetail = toDetail)
                 }
             }
         }
-
     }
 }
 
 @Composable
 fun GridListImages(
     photos: LazyPagingItems<Photo>,
+    type: MutableIntState,
+    query: MutableState<String>,
     onEvent: (HomeScreenEvents) -> Unit,
     toDetail: (photo: Photo) -> Unit
 ) {
     val lazyGridState = rememberLazyGridState()
 
     LaunchedEffect(lazyGridState) {
-        if (!lazyGridState.canScrollForward) {
+        if (type.intValue == 2 && !lazyGridState.canScrollForward) {
             onEvent(HomeScreenEvents.LoadPhoto)
+        }else if(type.intValue == 2 && !lazyGridState.canScrollForward){
+            onEvent(HomeScreenEvents.SearchPhoto(query = query.value))
         }
     }
 
@@ -151,6 +153,7 @@ fun ImageItem(url: String , photo: Photo ,  toDetail: (photo: Photo) -> Unit) {
                 .height(170.dp)
                 )
           }
+
   }
 
 
@@ -247,13 +250,15 @@ fun PhotoDialog(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBrSearch(onEvent: (HomeScreenEvents) -> Unit , query: MutableState<String>){
+fun TopBrSearch(onEvent: (HomeScreenEvents) -> Unit , query: MutableState<String>, type: MutableIntState){
     val focusRequester = remember { FocusRequester() }
     LaunchedEffect(Unit){
         focusRequester.requestFocus()
     }
 
     TopAppBar(
+        navigationIcon = { Icon(painterResource(id = R.drawable.baseline_arrow_back_24), null,
+            modifier = Modifier.clickable { type.intValue = 2}) },
         title = {
             TextField(
                 value = query.value,
@@ -266,7 +271,7 @@ fun TopBrSearch(onEvent: (HomeScreenEvents) -> Unit , query: MutableState<String
                 keyboardActions = KeyboardActions ( onSearch = {
                                onEvent.invoke(HomeScreenEvents.SearchPhoto(query.value))
                            }
-                )
+                   )
             )
         }
     )

@@ -12,7 +12,7 @@ class PhotoPagingSource @Inject constructor(private val unsplashApi: UnsplashApi
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Photo> {
        return try{
             val nextPageNumber = params.key ?: 1
-            val response  = if (query.isEmpty())unsplashApi.fetchPhotos(nextPageNumber).map{it.toPhoto()} else unsplashApi.searchPhoto(query).photoItems.map{it.toPhoto()}
+            val response  = if (query.isEmpty())unsplashApi.fetchPhotos(nextPageNumber).map{it.toPhoto()} else unsplashApi.searchPhoto(query, nextPageNumber).photoItems.map{it.toPhoto()}
              LoadResult.Page(
                 data = response,
                 prevKey = if(nextPageNumber == 1) null else nextPageNumber - 1,

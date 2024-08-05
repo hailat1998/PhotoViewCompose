@@ -53,10 +53,7 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
         }
     }
 
-    init {
-      photoList = loadWithPaging()
-                 .cachedIn(viewModelScope)
-    }
+
 
     private fun downloadPhoto(photo: Photo, selectedQ: String){
         photoRepository.enqueueDownload(photo , selectedQ)

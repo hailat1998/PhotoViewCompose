@@ -41,56 +41,56 @@ class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : Unsplash
 
 
 
-    override suspend fun getPhotos(): Flow<Resources<List<PhotoItem>>> {
-        Log.i("Images" , "called get photo")
-      return flow{
+//    override suspend fun getPhotos(): Flow<Resources<List<PhotoItem>>> {
+//        Log.i("Images" , "called get photo")
+//      return flow{
+//
+//          emit(Resources.Loading(true))
+//
+//          val remoteData = try {
+//
+//            val k =  unsplashApi.fetchPhotos(1)
+//
+//              Log.d("Photos", k.toString())
+//              k
+//          }catch(e: Exception){
+//              emit(Resources.Error("Couldn't load any photo"))
+//              println(e)
+//              null
+//          }
+//          if(remoteData == null){
+//              emit(Resources.Loading(false))
+//          }
+//          remoteData.let{
+//              emit(Resources.Success(data = it))
+//              println(it)
+//              Log.i("From Data", "$it")
+//              emit(Resources.Loading(false))
+//          }
+//       }
+//    }
 
-          emit(Resources.Loading(true))
-
-          val remoteData = try {
-
-            val k =  unsplashApi.fetchPhotos(1)
-
-              Log.d("Photos", k.toString())
-              k
-          }catch(e: Exception){
-              emit(Resources.Error("Couldn't load any photo"))
-              println(e)
-              null
-          }
-          if(remoteData == null){
-              emit(Resources.Loading(false))
-          }
-          remoteData.let{
-              emit(Resources.Success(data = it))
-              println(it)
-              Log.i("From Data", "$it")
-              emit(Resources.Loading(false))
-          }
-       }
-    }
-
-    override fun searchPhoto(query : String): Flow<Resources<Result>> {
-        return flow{
-            emit(Resources.Loading(true))
-            val remoteData = try {
-                unsplashApi.searchPhoto(query)
-            }catch(e: Exception){
-                emit(Resources.Error("Couldn't load any photo"))
-                println(e)
-                null
-            }
-            if(remoteData == null){
-                emit(Resources.Loading(false))
-            }
-            remoteData.let{
-                emit(Resources.Success(data = it))
-                println(it)
-                Log.i("From Data", "$it")
-                emit(Resources.Loading(false))
-            }
-        }
-    }
+//    override fun searchPhoto(query : String): Flow<Resources<Result>> {
+//        return flow{
+//            emit(Resources.Loading(true))
+//            val remoteData = try {
+//                unsplashApi.searchPhoto(query)
+//            }catch(e: Exception){
+//                emit(Resources.Error("Couldn't load any photo"))
+//                println(e)
+//                null
+//            }
+//            if(remoteData == null){
+//                emit(Resources.Loading(false))
+//            }
+//            remoteData.let{
+//                emit(Resources.Success(data = it))
+//                println(it)
+//                Log.i("From Data", "$it")
+//                emit(Resources.Loading(false))
+//            }
+//        }
+//    }
 
     override fun enqueueDownload(photo: Photo, selected: String) {
 

@@ -13,6 +13,6 @@ interface UnsplashApi {
     suspend fun fetchPhotos(@Query("page") page: Int): List<PhotoItem>
 
     @GET("/search/photos/?client_id=${API_KEY}")
-    suspend fun searchPhoto(@Query("query") query : String? ) : Result
+    suspend fun searchPhoto(@Query("query") query : String?, @Query("page") page: Int ) : Result
 
 }
