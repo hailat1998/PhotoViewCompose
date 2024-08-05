@@ -55,7 +55,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                 ) {
                     TextField(
                         value = selected,
-                        onValueChange = {},
+                        onValueChange = {selected = it},
                         readOnly = true,
                         trailingIcon = {
                             ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
