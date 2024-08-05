@@ -11,24 +11,20 @@ import androidx.paging.PagingData
 import com.hd.photoview.core.utils.Resources
 import com.hd.photoview.data.remote.dto.PhotoItem
 import com.hd.photoview.data.remote.dto.Result
-import com.hd.photoview.data.remote.dto.UnsplashApi
+import com.hd.photoview.data.remote.UnsplashApi
 import com.hd.photoview.domain.model.Photo
 import com.hd.photoview.domain.repository.PhotoRepository
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
-import org.jsoup.Jsoup
-import java.io.IOException
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : UnsplashApi,
                                               @ApplicationContext private val context: Context,
-    private val okHttpClient: OkHttpClient) : PhotoRepository {
+                                              private val okHttpClient: OkHttpClient) : PhotoRepository {
 
 
            override fun getPhotosPaging(): Flow<PagingData<Photo>>  = Pager(

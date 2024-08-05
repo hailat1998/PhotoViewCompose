@@ -3,8 +3,7 @@ package com.hd.photoview.data.repository
 import com.hd.photoview.domain.model.Photo
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.hd.photoview.data.remote.dto.PhotoItem
-import com.hd.photoview.data.remote.dto.UnsplashApi
+import com.hd.photoview.data.remote.UnsplashApi
 import com.hd.photoview.data.remote.dto.dto.mapper.toPhoto
 import javax.inject.Inject
 
