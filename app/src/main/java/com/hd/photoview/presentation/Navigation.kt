@@ -7,7 +7,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -23,9 +22,7 @@ import com.hd.photoview.presentation.screens.WebView
 import com.hd.photoview.presentation.screens.home.HomeScreen
 import com.hd.photoview.presentation.screens.home.HomeScreenEvents
 import com.hd.photoview.presentation.screens.home.HomeScreenViewModel
-import kotlinx.serialization.json.Json
 import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 import java.nio.charset.StandardCharsets.UTF_8
 import kotlin.reflect.typeOf
 

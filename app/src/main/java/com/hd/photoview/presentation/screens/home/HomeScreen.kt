@@ -134,7 +134,6 @@ fun GridListImages(
     }
 }
 
-
 @Composable
 fun ImageItem(url: String , photo: Photo ,  toDetail: (photo: Photo) -> Unit) {
     Box(
@@ -155,98 +154,6 @@ fun ImageItem(url: String , photo: Photo ,  toDetail: (photo: Photo) -> Unit) {
           }
 
   }
-
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun PhotoDialog(
-    photo: MutableState<Photo>,
-    onDismissRequest: () -> Unit,
-    onEvent: (HomeScreenEvents) -> Unit
-) {
-    var selected by remember { mutableStateOf("") }
-    var expanded by remember { mutableStateOf(false) }
-    val menuItems = listOf("full", "regular", "small")
-
-    AlertDialog(
-        onDismissRequest = onDismissRequest,
-        title = {
-            Text(text = "Photo")
-        },
-        text = {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row {
-                    Text(text = "Quality")
-                    ExposedDropdownMenuBox(
-                        expanded = expanded,
-                        onExpandedChange = { expanded = !expanded }
-                    ) {
-                        TextField(
-                            value = selected,
-                            onValueChange = {},
-                            readOnly = true,
-                            trailingIcon = {
-                                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                            },
-                            modifier = Modifier.menuAnchor(),
-                            textStyle = MaterialTheme.typography.titleMedium
-                        )
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false }
-                        ) {
-                            menuItems.forEach { q ->
-                                DropdownMenuItem(
-                                    text = { Text(text = q) },
-                                    onClick = {
-                                        selected = q
-                                        expanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-
-                    Icon(painterResource(id = R.drawable.baseline_download_24) , null,
-                        modifier = Modifier
-                            .clickable {
-                                onEvent.invoke(
-                                    HomeScreenEvents.Download(
-                                        photo.value,
-                                        selected
-                                    )
-                                )
-                            }
-                            .padding(12.dp))
-                    Icon(painterResource(id = R.drawable.public_24px) ,
-                        null, tint = Color.Black, modifier = Modifier.padding(12.dp)
-                       )
-                }
-
-                AsyncImage(
-                    model= photo.value.small,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .padding(16.dp)
-                )
-            }
-        },
-        confirmButton = {
-        },
-        dismissButton = {
-            Button(onClick = onDismissRequest) {
-                Text("Close")
-            }
-        }
-    )
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
