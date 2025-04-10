@@ -2,17 +2,21 @@ package com.hd.photoview.presentation.screens.home
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,27 +24,22 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -111,12 +110,20 @@ fun GridListImages(
 ) {
     val lazyGridState = rememberLazyGridState()
 
+
+    val isLoading = photos.loadState.append is LoadState.Loading
+
     LaunchedEffect(lazyGridState) {
-        if (type.intValue == 2 && !lazyGridState.canScrollForward) {
-            onEvent(HomeScreenEvents.LoadPhoto)
-        }else if(type.intValue == 2 && !lazyGridState.canScrollForward){
-            onEvent(HomeScreenEvents.SearchPhoto(query = query.value))
-        }
+        snapshotFlow { lazyGridState.firstVisibleItemIndex }
+            .collect { index ->
+                if (index >= photos.itemCount - 5) {
+                    if (type.intValue == 2) {
+                        onEvent(HomeScreenEvents.LoadPhoto)
+                    } else if (type.intValue == 1) {
+                        onEvent(HomeScreenEvents.SearchPhoto(query = query.value))
+                    }
+                }
+            }
     }
 
     LazyVerticalGrid(
@@ -125,10 +132,30 @@ fun GridListImages(
         columns = GridCells.Fixed(2),
         modifier = Modifier.fillMaxSize()
     ) {
-        items(photos.itemCount) { index ->
+        items(photos.itemCount, key = { index -> photos[index]?.id ?: index }) { index ->
             val photo = photos[index]
             photo?.let {
-                ImageItem(photo.small , photo ,toDetail = toDetail)
+
+                AnimatedVisibility(
+                    visible = true,
+                    enter = fadeIn(animationSpec = tween(300)) +
+                            expandVertically(animationSpec = tween(300))
+                ) {
+                    ImageItem(photo.small, photo, toDetail = toDetail)
+                }
+            }
+        }
+
+        if (isLoading) {
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
             }
         }
     }
@@ -164,24 +191,56 @@ fun TopBrSearch(onEvent: (HomeScreenEvents) -> Unit , query: MutableState<String
     }
 
     TopAppBar(
-        navigationIcon = { Icon(painterResource(id = R.drawable.baseline_arrow_back_24), null,
-            modifier = Modifier.clickable { type.intValue = 2}) },
+        navigationIcon = {
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_arrow_back_24),
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .clickable { type.intValue = 2 }
+            )
+        },
         title = {
-            TextField(
-                value = query.value,
-                onValueChange = { newText -> query.value = newText },
-                placeholder = { Text("Search...") },
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(focusRequester),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                keyboardActions = KeyboardActions ( onSearch = {
-                               onEvent.invoke(HomeScreenEvents.SearchPhoto(query.value))
-                           }
-                   )
-            )
-        }
+                    .padding(end = 12.dp) // spacing from trailing edge
+            ) {
+                TextField(
+                    value = query.value,
+                    onValueChange = { newText -> query.value = newText },
+                    placeholder = { Text("Search...") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(20.dp),
+                    colors = TextFieldDefaults.colors(
+                        focusedContainerColor = Color(0xFFF0F0F0),
+                        unfocusedContainerColor = Color(0xFFF0F0F0),
+                        disabledContainerColor = Color(0xFFE0E0E0),
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                        unfocusedPlaceholderColor = MaterialTheme.colorScheme.onSurfaceVariant
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp) // match Material style
+                        .focusRequester(focusRequester),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                    keyboardActions = KeyboardActions(
+                        onSearch = {
+                            onEvent.invoke(HomeScreenEvents.SearchPhoto(query.value))
+                        }
+                    )
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = MaterialTheme.colorScheme.surface)
     )
+
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

@@ -41,7 +41,8 @@ fun MainHost(navHostController: NavHostController){
                 viewModel.searchPhotoList.collectAsLazyPagingItems()
             }else {
                 viewModel.onEvents(HomeScreenEvents.LoadPhoto)
-                viewModel.photoList.collectAsLazyPagingItems()}
+                viewModel.photoList.collectAsLazyPagingItems()
+            }
              HomeScreen(photos = photos, type, query ,onEvent =  { viewModel.onEvents(it) }, toDetail = { it ->
                  val photo = it.toDecoded()
                  navHostController.navigate(Routes.DetailScreen(photo)){
