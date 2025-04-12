@@ -30,9 +30,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -47,23 +45,15 @@ import com.hd.photoview.R
 import com.hd.photoview.domain.model.Photo
 import com.hd.photoview.presentation.utils.ImageItem
 
-
 @Composable
 fun SearchScreen(photos: LazyPagingItems<Photo>,
                  onEvent: (SearchEvent) -> Unit,
-                 toDetail: (photo: Photo) -> Unit) {
+                 toDetail: (photo: Photo) -> Unit,
+                 query: MutableState<String>) {
+
     val lazyGridState = rememberLazyGridState()
 
     val isLoading = photos.loadState.append is LoadState.Loading
-
-    val query = remember { mutableStateOf("") }
-
-    LaunchedEffect(lazyGridState) {
-        snapshotFlow { lazyGridState.firstVisibleItemIndex }
-            .collect { index ->
-                onEvent(SearchEvent.SearchPhoto(query.value))
-            }
-    }
 
     Scaffold(modifier = Modifier.fillMaxSize(),
         topBar = { TopBrSearch(onEvent, query)
@@ -103,10 +93,8 @@ fun SearchScreen(photos: LazyPagingItems<Photo>,
                 }
             }
         }
+    }
 }
-}
-
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -167,5 +155,4 @@ fun TopBrSearch(onEvent: (SearchEvent) -> Unit, query: MutableState<String> ){
         },
         colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = MaterialTheme.colorScheme.surface)
     )
-
 }

@@ -4,6 +4,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -57,10 +58,11 @@ fun MainHost(navHostController: NavHostController){
 
         composable<Routes.Search> {
             val viewModel = hiltViewModel<SearchViewModel>()
-            viewModel.onEvents(SearchEvent.SearchPhoto(" "))
+
+            val query = remember { mutableStateOf("") }
 
             val photos = remember {
-                viewModel.searchPhotoList
+                viewModel.searchPhotoList(query.value)
             }.collectAsLazyPagingItems()
 
             SearchScreen(photos, onEvent = { viewModel::onEvents }, toDetail ={
@@ -69,7 +71,7 @@ fun MainHost(navHostController: NavHostController){
                 navHostController.navigate(Routes.DetailScreen(decodedPhoto)) {
                     restoreState = true
                 }
-            }
+             }
             )
         }
 

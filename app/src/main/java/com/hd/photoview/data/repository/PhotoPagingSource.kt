@@ -1,15 +1,23 @@
 package com.hd.photoview.data.repository
 
+import android.net.http.HttpException
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresExtension
 import com.hd.photoview.domain.model.Photo
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
 import com.hd.photoview.data.remote.UnsplashApi
 import com.hd.photoview.data.remote.dto.dto.mapper.toPhoto
+import dagger.Component.Factory
+import java.io.IOException
 import javax.inject.Inject
 
+
+@Factory
 class PhotoPagingSource @Inject constructor(private val unsplashApi: UnsplashApi, private val query: String = ""):
     PagingSource<Int , Photo>() {
+    @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Photo> {
        return try{
             val nextPageNumber = params.key ?: 1
@@ -22,9 +30,16 @@ class PhotoPagingSource @Inject constructor(private val unsplashApi: UnsplashApi
                 prevKey = if(nextPageNumber == 1) null else nextPageNumber - 1,
                 nextKey = nextPageNumber + 1
             )
-        }catch(e : Exception){
-            LoadResult.Error(e)
-        }
+        }catch (e: IOException) {
+           Log.e("PAGING", "Network error: ${e.message}")
+           LoadResult.Error(e)
+       } catch (e: HttpException) {
+           Log.e("PAGING", "HTTP error: ${e.message}")
+           LoadResult.Error(e)
+       } catch (e: Exception) {
+           Log.e("PAGING", "Unknown error: ${e.message}")
+           LoadResult.Error(e)
+       }
     }
 
 

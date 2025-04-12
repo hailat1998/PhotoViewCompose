@@ -26,5 +26,6 @@ Save it like this:
 
 ```kotlin
 const val API_KEY= "<YOUR API KEY>"
+
 ```
 

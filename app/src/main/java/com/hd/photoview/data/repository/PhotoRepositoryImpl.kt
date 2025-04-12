@@ -28,12 +28,12 @@ class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : Unsplash
 
 
            override fun getPhotosPaging(): Flow<PagingData<Photo>>  = Pager(
-                    config = PagingConfig(pageSize = 30 , maxSize = 30),
+                    config = PagingConfig(pageSize = 30),
                  pagingSourceFactory = { PhotoPagingSource(unsplashApi) }
              ).flow
 
            override fun searchPhotoPaging(query: String): Flow<PagingData<Photo>>  = Pager(
-               config = PagingConfig(pageSize = 10 , maxSize = 30),
+               config = PagingConfig(pageSize = 30 ),
                pagingSourceFactory = { PhotoPagingSource(unsplashApi , query) }
            ).flow
 

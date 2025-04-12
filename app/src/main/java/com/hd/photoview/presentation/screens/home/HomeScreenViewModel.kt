@@ -23,6 +23,4 @@ class HomeScreenViewModel @Inject constructor( private val photoRepository: Phot
             }
         }
     }
-    private fun loadWithPaging() = photoRepository.getPhotosPaging()
-
-    }
+}
