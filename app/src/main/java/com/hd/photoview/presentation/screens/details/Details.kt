@@ -1,4 +1,4 @@
-package com.hd.photoview.presentation.screens
+package com.hd.photoview.presentation.screens.details
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -58,14 +58,14 @@ import com.hd.photoview.presentation.screens.home.HomeScreenEvents
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc: String, id: String) -> Unit) {
+fun PhotoDetail(photo: Photo, onEvent: (DetailsEvent) -> Unit, toWeb: (desc: String, id: String) -> Unit) {
     var selected by remember { mutableStateOf("full") }
     var expanded by remember { mutableStateOf(false) }
     val isDark = isSystemInDarkTheme()
     val menuItems = listOf("full", "regular", "small")
     var imageLoaded by remember { mutableStateOf(false) }
 
-    // Animation states
+
     val imageScale by animateFloatAsState(
         targetValue = if (imageLoaded) 1f else 0.8f,
         animationSpec = spring(
@@ -75,7 +75,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
         label = "imageScale"
     )
 
-    // Trigger image load animation
+
     LaunchedEffect(Unit) {
         imageLoaded = true
     }
@@ -87,7 +87,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
         Box(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Main image
+
             AsyncImage(
                 model = photo.small,
                 contentDescription = photo.description ?: "Photo",
@@ -96,7 +96,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                     .fillMaxSize()
                     .padding(16.dp)
                     .scale(imageScale)
-                    .alpha(0.2f) // Background watermark effect
+                    .alpha(0.2f)
             )
 
             Column(
@@ -105,7 +105,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                     .padding(16.dp),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Top section with photo info
+
                 AnimatedVisibility(
                     visible = imageLoaded,
                     enter = fadeIn() + slideInVertically { -50 }
@@ -122,7 +122,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                                 .fillMaxWidth()
                                 .padding(16.dp)
                         ) {
-                            // Photo title/description
+
                             if (!photo.description.isNullOrBlank()) {
                                 Text(
                                     text = photo.description.replace("+", " "),
@@ -134,7 +134,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
 
-                            // Photo metadata
+
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -146,7 +146,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
 
-                                // Web button
+
                                 Card(
                                     modifier = Modifier
                                         .clip(CircleShape)
@@ -171,7 +171,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                     }
                 }
 
-                // Main image display
+
                 Box(
                     modifier = Modifier
                         .weight(1f)
@@ -195,7 +195,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                     }
                 }
 
-                // Bottom controls
+
                 AnimatedVisibility(
                     visible = imageLoaded,
                     enter = fadeIn() + slideInVertically { 50 }
@@ -214,7 +214,7 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            // Quality selector
+
                             Column(
                                 modifier = Modifier.weight(1f)
                             ) {
@@ -271,12 +271,12 @@ fun PhotoDetail(photo: Photo, onEvent: (HomeScreenEvents) -> Unit, toWeb: (desc:
 
                             Spacer(modifier = Modifier.width(16.dp))
 
-                            // Download button
+
                             Card(
                                 modifier = Modifier
                                     .clip(RoundedCornerShape(16.dp))
                                     .clickable {
-                                        onEvent.invoke(HomeScreenEvents.Download(photo, selected))
+                                        onEvent.invoke(DetailsEvent.Download(photo, selected))
                                     },
                                 colors = CardDefaults.cardColors(
                                     containerColor = MaterialTheme.colorScheme.primary

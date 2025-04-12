@@ -12,14 +12,19 @@ import kotlinx.serialization.json.Json
 
 @Serializable
 sealed class Routes{
+
     @Serializable
     data object Home: Routes()
+
+    @Serializable
+    data object Search: Routes()
 
     @Serializable
     data class WebScreen(val alt_desc: String, val id: String): Routes()
 
     @Serializable
     data class DetailScreen(val photo: Photo): Routes()
+
 }
 
 class CustomNavType<T : Parcelable>(

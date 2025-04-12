@@ -9,6 +9,7 @@ import com.hd.photoview.API_KEY
 
 
 interface UnsplashApi {
+
     @GET("/photos/?client_id=${API_KEY}")
     suspend fun fetchPhotos(@Query("page") page: Int): List<PhotoItem>
 

@@ -1,5 +1,6 @@
 package com.hd.photoview.data.repository
 
+import android.util.Log
 import com.hd.photoview.domain.model.Photo
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
@@ -13,6 +14,9 @@ class PhotoPagingSource @Inject constructor(private val unsplashApi: UnsplashApi
        return try{
             val nextPageNumber = params.key ?: 1
             val response  = if (query.isEmpty())unsplashApi.fetchPhotos(nextPageNumber).map{it.toPhoto()} else unsplashApi.searchPhoto(query, nextPageNumber).photoItems.map{it.toPhoto()}
+
+           Log.i("PAGING", "load called")
+
              LoadResult.Page(
                 data = response,
                 prevKey = if(nextPageNumber == 1) null else nextPageNumber - 1,
