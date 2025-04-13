@@ -14,14 +14,16 @@ import java.io.IOException
 import javax.inject.Inject
 
 
-@Factory
 class PhotoPagingSource @Inject constructor(private val unsplashApi: UnsplashApi, private val query: String = ""):
     PagingSource<Int , Photo>() {
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Photo> {
        return try{
             val nextPageNumber = params.key ?: 1
-            val response  = if (query.isEmpty())unsplashApi.fetchPhotos(nextPageNumber).map{it.toPhoto()} else unsplashApi.searchPhoto(query, nextPageNumber).photoItems.map{it.toPhoto()}
+            val response  = if (query.isEmpty()) { unsplashApi.fetchPhotos (nextPageNumber).map { it.toPhoto() }
+            } else {
+                unsplashApi.searchPhoto(query, nextPageNumber).photoItems.map{it.toPhoto()}
+            }
 
            Log.i("PAGING", "load called")
 
@@ -49,4 +51,5 @@ class PhotoPagingSource @Inject constructor(private val unsplashApi: UnsplashApi
                 ?: state.closestPageToPosition(it)?.nextKey?.minus(1)
         }
     }
+
 }

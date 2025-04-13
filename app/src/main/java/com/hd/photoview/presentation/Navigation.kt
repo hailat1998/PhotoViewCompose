@@ -1,8 +1,9 @@
 package com.hd.photoview.presentation
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -11,7 +12,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
-import androidx.paging.compose.collectAsLazyPagingItems
 import com.hd.photoview.domain.model.Photo
 import com.hd.photoview.presentation.screens.CustomNavType
 import com.hd.photoview.presentation.screens.Routes
@@ -20,12 +20,12 @@ import com.hd.photoview.presentation.screens.details.DetailsViewModel
 import com.hd.photoview.presentation.screens.details.PhotoDetail
 import com.hd.photoview.presentation.screens.home.HomeScreen
 import com.hd.photoview.presentation.screens.home.HomeScreenViewModel
-import com.hd.photoview.presentation.screens.search.SearchEvent
 import com.hd.photoview.presentation.screens.search.SearchScreen
 import com.hd.photoview.presentation.screens.search.SearchViewModel
 import com.hd.photoview.presentation.utils.toDecoded
 import kotlin.reflect.typeOf
 
+const val ANIMATION_DURATION = 700
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -37,10 +37,10 @@ fun MainHost(navHostController: NavHostController){
 
             val viewModel = hiltViewModel<HomeScreenViewModel>()
 
-            val photos = remember { viewModel.photoList }.collectAsLazyPagingItems()
+            val photos = remember { viewModel.photoList }
 
             HomeScreen(
-                photos = photos,
+                photosData = photos,
                 onEvent = { viewModel.onEvents(it) },
                 toDetail = { photo ->
                     val decodedPhoto = photo.toDecoded()
@@ -49,47 +49,90 @@ fun MainHost(navHostController: NavHostController){
                         restoreState = true
                     }
                 },
-                toSearch = {navHostController.navigate(Routes.Search) {
+                toSearch = { navHostController.navigate(Routes.Search) {
                     restoreState = true
                 }
               }
             )
          }
 
-        composable<Routes.Search> {
+        composable<Routes.Search>(
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    tween(ANIMATION_DURATION)
+                )
+            },
+            popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    tween(ANIMATION_DURATION)
+                )
+            }
+        ) {
             val viewModel = hiltViewModel<SearchViewModel>()
+            val queryState = remember { mutableStateOf("") }
 
-            val query = remember { mutableStateOf("") }
 
-            val photos = remember {
-                viewModel.searchPhotoList(query.value)
-            }.collectAsLazyPagingItems()
+            val searchTrigger = remember { mutableStateOf(0) }
 
-            SearchScreen(photos, onEvent = { viewModel::onEvents }, toDetail ={
-                    photo ->
-                val decodedPhoto = photo.toDecoded()
-                navHostController.navigate(Routes.DetailScreen(decodedPhoto)) {
-                    restoreState = true
+            val photos = remember(searchTrigger.value, queryState.value) {
+                viewModel.searchPhotoList(queryState.value)
+            }
+
+            SearchScreen(
+                photosData = photos,
+                toDetail = { photo ->
+                    val decodedPhoto = photo.toDecoded()
+                    navHostController.navigate(Routes.DetailScreen(decodedPhoto)) {
+                        restoreState = true
+                    }
+                },
+                query = queryState,
+                onSearch = {
+                    searchTrigger.value++
                 }
-             }
             )
         }
 
-        composable<Routes.WebScreen> { backStackEntry ->
+        composable<Routes.WebScreen>(
+            enterTransition = {
+            return@composable slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Start,
+                tween(ANIMATION_DURATION)
+            )
+        },
+            popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    tween(ANIMATION_DURATION)
+                )
+            }
+        ) { backStackEntry ->
                val arg = backStackEntry.toRoute<Routes.WebScreen>()
             WebView(id = arg.id, desc = arg.alt_desc)
         }
 
-        composable<Routes.DetailScreen>( typeMap = mapOf(typeOf<Photo>() to
-                CustomNavType(Photo::class.java, Photo.serializer()))) { backStackEntry ->
+        composable<Routes.DetailScreen>( typeMap =
+            mapOf(typeOf<Photo>() to CustomNavType(Photo::class.java, Photo.serializer())),
+            enterTransition = {
+                return@composable slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    tween(ANIMATION_DURATION)
+                )
+            },
+            popExitTransition = {
+                return@composable slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    tween(ANIMATION_DURATION)
+                )
+            }) { backStackEntry ->
 
             val viewModel = hiltViewModel<DetailsViewModel>()
 
-                val parameters = backStackEntry.toRoute<Routes.DetailScreen>()
+            val parameters = backStackEntry.toRoute<Routes.DetailScreen>()
 
-                Log.i("FROM NAV", parameters.photo.description)
-
-              PhotoDetail(photo = parameters.photo , onEvent =  {
+            PhotoDetail(photo = parameters.photo , onEvent =  {
                   viewModel.onEvent(it)
               }, toWeb = { id, altDesc ->
                   navHostController.navigate(Routes.WebScreen(id, altDesc))

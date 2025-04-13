@@ -48,20 +48,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.hd.photoview.domain.model.Photo
 import com.hd.photoview.presentation.utils.ImageItem
 import com.hd.photoview.R
+import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun HomeScreen(
-    photos: LazyPagingItems<Photo>,
+    photosData: Flow<PagingData<Photo>>,
     onEvent: (HomeScreenEvents) -> Unit,
     toDetail: (photo: Photo) -> Unit,
     toSearch: () -> Unit
 ) {
     val context = LocalContext.current as Activity
     val gridState = rememberLazyGridState()
+
+
+    val photos = photosData.collectAsLazyPagingItems()
 
     BackHandler {
         context.finish()
@@ -229,7 +235,7 @@ fun PhotoGrid(
     ) {
         items(
             count = photos.itemCount,
-            key = { index -> photos[index]?.id ?: index }
+            //key = { index -> photos[index]?.id ?: index }
         ) { index ->
             photos[index]?.let { photo ->
                 ImageItem(photo.small, photo, toDetail = toDetail)

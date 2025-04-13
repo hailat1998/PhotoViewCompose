@@ -40,23 +40,30 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.paging.LoadState
+import androidx.paging.PagingData
 import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.hd.photoview.R
 import com.hd.photoview.domain.model.Photo
 import com.hd.photoview.presentation.utils.ImageItem
+import kotlinx.coroutines.flow.Flow
+import kotlin.invoke
 
 @Composable
-fun SearchScreen(photos: LazyPagingItems<Photo>,
-                 onEvent: (SearchEvent) -> Unit,
+fun SearchScreen(photosData: Flow<PagingData<Photo>>,
                  toDetail: (photo: Photo) -> Unit,
-                 query: MutableState<String>) {
+                 query: MutableState<String>,
+                 onSearch: () -> Unit ) {
+
+    val photos = photosData.collectAsLazyPagingItems()
 
     val lazyGridState = rememberLazyGridState()
 
     val isLoading = photos.loadState.append is LoadState.Loading
 
     Scaffold(modifier = Modifier.fillMaxSize(),
-        topBar = { TopBrSearch(onEvent, query)
+        topBar = {
+            TopBrSearch(query, onSearch)
         }
     ) {  innerPadding ->
         Box(Modifier.fillMaxSize().padding(innerPadding)) {
@@ -66,7 +73,10 @@ fun SearchScreen(photos: LazyPagingItems<Photo>,
                 columns = GridCells.Fixed(2),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(photos.itemCount, key = { index -> photos[index]?.id ?: index }) { index ->
+                items(
+                    photos.itemCount
+                //    key = { index -> photos[index]?.id ?: index }
+                ) { index ->
                     val photo = photos[index]
                     photo?.let {
                         AnimatedVisibility(
@@ -98,7 +108,7 @@ fun SearchScreen(photos: LazyPagingItems<Photo>,
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBrSearch(onEvent: (SearchEvent) -> Unit, query: MutableState<String> ){
+fun TopBrSearch(query: MutableState<String>, onSearch: () -> Unit){
 
     val focusRequester = remember { FocusRequester() }
 
@@ -128,12 +138,17 @@ fun TopBrSearch(onEvent: (SearchEvent) -> Unit, query: MutableState<String> ){
                     singleLine = true,
                     shape = RoundedCornerShape(20.dp),
                     colors = TextFieldDefaults.colors(
-                        focusedContainerColor = Color(0xFFF0F0F0),
-                        unfocusedContainerColor = Color(0xFFF0F0F0),
-                        disabledContainerColor = Color(0xFFE0E0E0),
+
+                        focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                        disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f),
+
+
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent,
+
+
                         cursorColor = MaterialTheme.colorScheme.primary,
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -142,12 +157,12 @@ fun TopBrSearch(onEvent: (SearchEvent) -> Unit, query: MutableState<String> ){
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(40.dp) // match Material style
+                        .height(40.dp)
                         .focusRequester(focusRequester),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(
                         onSearch = {
-                            onEvent.invoke(SearchEvent.SearchPhoto(query.value))
+                            onSearch.invoke()
                         }
                     )
                 )
@@ -156,3 +171,5 @@ fun TopBrSearch(onEvent: (SearchEvent) -> Unit, query: MutableState<String> ){
         colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = MaterialTheme.colorScheme.surface)
     )
 }
+
+

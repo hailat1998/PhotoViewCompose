@@ -22,6 +22,4 @@ class SearchViewModel @Inject constructor(private val photoRepository: PhotoRepo
             }
         }
     }
-
-
 }
