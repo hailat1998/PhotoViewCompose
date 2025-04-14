@@ -16,6 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : UnsplashApi,
                                               @ApplicationContext private val context: Context,
+                                              private val downloadManagerHelper: DownloadManagerHelper
                                              ) : PhotoRepository {
 
 
@@ -42,8 +43,6 @@ class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : Unsplash
             "small" -> photo.small
             else -> photo.regular
         }
-
-        val downloadHelper = DownloadManagerHelper(context)
-        downloadHelper.downloadFile(url, photo)
+        downloadManagerHelper.downloadFile(url, photo)
     }
 }

@@ -1,10 +1,12 @@
 package com.hd.photoview.presentation
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -74,9 +76,10 @@ fun MainHost(navHostController: NavHostController){
             val queryState = remember { mutableStateOf("") }
 
 
-            val searchTrigger = remember { mutableStateOf(0) }
+            val searchTrigger = remember { mutableIntStateOf(0) }
 
-            val photos = remember(searchTrigger.value, queryState.value) {
+            val photos = remember(searchTrigger.value) {
+               Log.i("SEARCH", "${searchTrigger.value}")
                 viewModel.searchPhotoList(queryState.value)
             }
 

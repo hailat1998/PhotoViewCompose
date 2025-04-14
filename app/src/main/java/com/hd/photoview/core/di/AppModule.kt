@@ -1,5 +1,6 @@
 package com.hd.photoview.core.di
 
+import com.hd.photoview.API_KEY
 import com.hd.photoview.data.remote.UnsplashApi
 import dagger.Module
 import dagger.Provides
@@ -21,19 +22,38 @@ import javax.inject.Singleton
 object AppModule {
     @Provides
     @Singleton
-    fun providePhotos(): UnsplashApi {
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
+            .addInterceptor { chain ->
+                val original = chain.request()
+                val originalHttpUrl = original.url
+
+                val url = originalHttpUrl.newBuilder()
+                    .addQueryParameter("client_id", API_KEY)
+                    .build()
+
+                val requestBuilder = original.newBuilder()
+                    .url(url)
+
+                val request = requestBuilder.build()
+                chain.proceed(request)
+            }
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.BODY
+            })
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun providePhotos(okHttpClient: OkHttpClient): UnsplashApi {
         return Retrofit.Builder()
             .baseUrl("https://api.unsplash.com/")
             .addConverterFactory(MoshiConverterFactory.create())
-            .client(
-                OkHttpClient.Builder()
-                    .connectTimeout(60, TimeUnit.SECONDS)
-                    .readTimeout(60, TimeUnit.SECONDS)
-                    .writeTimeout(60, TimeUnit.SECONDS)
-                    .addInterceptor(HttpLoggingInterceptor().apply {
-                        level = HttpLoggingInterceptor.Level.BODY
-                    }).build()
-            )
+            .client(okHttpClient)
             .build()
             .create(UnsplashApi::class.java)
     }
@@ -42,11 +62,6 @@ object AppModule {
     @Singleton
     @IoDispatcher
     fun providesDispatcherIO(): CoroutineDispatcher = Dispatchers.IO
-
-    @Provides
-    @Singleton
-    fun provideOkhttp(): OkHttpClient = OkHttpClient()
-
 
 }
 

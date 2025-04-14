@@ -15,11 +15,16 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import com.hd.photoview.domain.model.Photo
+import dagger.hilt.android.qualifiers.ApplicationContext
 import java.io.File
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.math.log10
 import kotlin.math.pow
 
-class DownloadManagerHelper(private val context: Context) {
+
+@Singleton
+class DownloadManagerHelper @Inject constructor(@ApplicationContext private val context: Context)  {
 
     private val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
     private val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

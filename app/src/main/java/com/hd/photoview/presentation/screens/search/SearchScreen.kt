@@ -74,8 +74,8 @@ fun SearchScreen(photosData: Flow<PagingData<Photo>>,
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(
-                    photos.itemCount
-                //    key = { index -> photos[index]?.id ?: index }
+                    photos.itemCount,
+                    key = { index -> photos[index]?.id ?: index }
                 ) { index ->
                     val photo = photos[index]
                     photo?.let {
@@ -157,7 +157,6 @@ fun TopBrSearch(query: MutableState<String>, onSearch: () -> Unit){
                     ),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(40.dp)
                         .focusRequester(focusRequester),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(
