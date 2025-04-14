@@ -1,13 +1,18 @@
 package com.hd.photoview.presentation.screens.details
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.gestures.rememberTransformableState
+import androidx.compose.foundation.gestures.transformable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,7 +50,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -54,17 +61,27 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.hd.photoview.R
 import com.hd.photoview.domain.model.Photo
-import com.hd.photoview.presentation.screens.home.HomeScreenEvents
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
-fun PhotoDetail(photo: Photo, onEvent: (DetailsEvent) -> Unit, toWeb: (desc: String, id: String) -> Unit) {
+fun SharedTransitionScope.PhotoDetail(photo: Photo,
+                                      onEvent: (DetailsEvent) -> Unit,
+                                      toWeb: (desc: String, id: String) -> Unit,
+                                      animatedVisibilityScope: AnimatedVisibilityScope,
+                                      ) {
+
     var selected by remember { mutableStateOf("full") }
     var expanded by remember { mutableStateOf(false) }
-    val isDark = isSystemInDarkTheme()
     val menuItems = listOf("full", "regular", "small")
     var imageLoaded by remember { mutableStateOf(false) }
 
+    var scale by remember { mutableStateOf(1f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    val state = rememberTransformableState { zoomChange, panChange, _ ->
+        scale *= zoomChange
+        offset += panChange
+    }
 
     val imageScale by animateFloatAsState(
         targetValue = if (imageLoaded) 1f else 0.8f,
@@ -74,7 +91,6 @@ fun PhotoDetail(photo: Photo, onEvent: (DetailsEvent) -> Unit, toWeb: (desc: Str
         ),
         label = "imageScale"
     )
-
 
     LaunchedEffect(Unit) {
         imageLoaded = true
@@ -129,7 +145,15 @@ fun PhotoDetail(photo: Photo, onEvent: (DetailsEvent) -> Unit, toWeb: (desc: Str
                                     style = MaterialTheme.typography.titleMedium,
                                     fontWeight = FontWeight.Bold,
                                     maxLines = 2,
-                                    overflow = TextOverflow.Ellipsis
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier
+                                        .sharedElement(
+                                            state = rememberSharedContentState("text/${photo.id}"),
+                                            animatedVisibilityScope = animatedVisibilityScope,
+                                            boundsTransform = { _, _ ->
+                                                tween(durationMillis = 700)
+                                            }
+                                        )
                                 )
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
@@ -175,7 +199,8 @@ fun PhotoDetail(photo: Photo, onEvent: (DetailsEvent) -> Unit, toWeb: (desc: Str
                 Box(
                     modifier = Modifier
                         .weight(1f)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .scale(imageScale),
                     contentAlignment = Alignment.Center
                 ) {
                     Card(
@@ -190,7 +215,20 @@ fun PhotoDetail(photo: Photo, onEvent: (DetailsEvent) -> Unit, toWeb: (desc: Str
                             contentScale = ContentScale.Fit,
                             modifier = Modifier
                                 .fillMaxSize()
-                                .scale(imageScale)
+                                .graphicsLayer(
+                                    scaleX = scale.coerceIn(1f, 5f),
+                                    scaleY = scale.coerceIn(1f, 5f),
+                                    translationX = offset.x,
+                                    translationY = offset.y
+                                )
+                                .transformable(state = state)
+                                .sharedElement(
+                                    state = rememberSharedContentState("image/${photo.id}"),
+                                    animatedVisibilityScope = animatedVisibilityScope,
+                                    boundsTransform = { _, _ ->
+                                        tween(durationMillis = 700)
+                                    }
+                                )
                         )
                     }
                 }
@@ -215,18 +253,23 @@ fun PhotoDetail(photo: Photo, onEvent: (DetailsEvent) -> Unit, toWeb: (desc: Str
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
 
-                            Column(
-                                modifier = Modifier.weight(1f)
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
+
                                 Text(
                                     text = "Download Quality",
                                     style = MaterialTheme.typography.labelMedium,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.padding(end = 3.dp)
                                 )
-                                Spacer(modifier = Modifier.height(4.dp))
+
+
                                 ExposedDropdownMenuBox(
                                     expanded = expanded,
-                                    onExpandedChange = { expanded = !expanded }
+                                    onExpandedChange = { expanded = !expanded },
+                                    modifier = Modifier.weight(1f)
                                 ) {
                                     TextField(
                                         value = selected,
@@ -245,7 +288,8 @@ fun PhotoDetail(photo: Photo, onEvent: (DetailsEvent) -> Unit, toWeb: (desc: Str
                                             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                                             focusedIndicatorColor = Color.Transparent,
                                             unfocusedIndicatorColor = Color.Transparent
-                                        )
+                                        ),
+                                        maxLines = 1
                                     )
                                     ExposedDropdownMenu(
                                         expanded = expanded,
@@ -269,7 +313,7 @@ fun PhotoDetail(photo: Photo, onEvent: (DetailsEvent) -> Unit, toWeb: (desc: Str
                                 }
                             }
 
-                            Spacer(modifier = Modifier.width(16.dp))
+                            Spacer(modifier = Modifier.width(5.dp))
 
 
                             Card(

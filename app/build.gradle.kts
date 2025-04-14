@@ -36,6 +36,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -154,7 +155,9 @@ dependencies {
     /*
     Navigation
      */
-    implementation("androidx.navigation:navigation-fragment-ktx:2.8.0-beta06")
-    implementation("androidx.navigation:navigation-ui-ktx:2.8.0-beta06")
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ui)
+    implementation(libs.androidx.animation)
 }

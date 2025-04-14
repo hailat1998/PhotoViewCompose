@@ -2,6 +2,9 @@ package com.hd.photoview.presentation.screens.home
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -56,10 +59,11 @@ import com.hd.photoview.presentation.utils.ImageItem
 import com.hd.photoview.R
 import kotlinx.coroutines.flow.Flow
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun HomeScreen(
+fun SharedTransitionScope.HomeScreen(
     photosData: Flow<PagingData<Photo>>,
-    onEvent: (HomeScreenEvents) -> Unit,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     toDetail: (photo: Photo) -> Unit,
     toSearch: () -> Unit
 ) {
@@ -101,7 +105,8 @@ fun HomeScreen(
                         gridState = gridState,
                         photos = photos,
                         toDetail = toDetail,
-                        onRetry = { photos.retry() }
+                        onRetry = { photos.retry() },
+                        animatedVisibilityScope = animatedVisibilityScope
                     )
                 }
             }
@@ -218,10 +223,12 @@ private fun ErrorContent(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun PhotoGrid(
+fun SharedTransitionScope.PhotoGrid(
     gridState: LazyGridState,
     photos: LazyPagingItems<Photo>,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     toDetail: (Photo) -> Unit,
     onRetry: () -> Unit
 ) {
@@ -238,7 +245,7 @@ fun PhotoGrid(
             //key = { index -> photos[index]?.id ?: index }
         ) { index ->
             photos[index]?.let { photo ->
-                ImageItem(photo.small, photo, toDetail = toDetail)
+                ImageItem(photo.small, photo, toDetail = toDetail, animatedVisibilityScope)
             }
         }
 

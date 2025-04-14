@@ -1,4 +1,5 @@
 [versions]
+animation = "1.7.8"
 library = "8.0.2"
 agp = "8.2.2"
 kotlin = "2.0.0"
@@ -31,6 +32,7 @@ accompanist-pager-indicators = "0.25.0"
 commons-io = "2.13.0"
 
 #PDFium
+navigationFragmentKtx = "2.8.9"
 pagingRuntime = "3.3.1"
 pdfium-android = "1.9.0"
 android-pdf-viewer = "3.2.0-beta.1"
@@ -102,6 +104,7 @@ shimmer = "0.5.0"
 jsoup = "1.15.4"
 
 #Download File
+ui = "1.7.8"
 work-runtime-ktx = "2.9.0"
 
 #KSP
@@ -110,7 +113,10 @@ uiToolingPreviewAndroid = "1.6.8"
 
 
 [libraries]
+androidx-animation = { module = "androidx.compose.animation:animation", version.ref = "animation" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+androidx-navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationFragmentKtx" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "pagingRuntime" }
 androidx-paging-runtime = { module = "androidx.paging:paging-runtime", version.ref = "pagingRuntime" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -139,6 +145,7 @@ constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayo
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
 moshi-kotlin-codegen = { module = "com.squareup.moshi:moshi-kotlin-codegen", version.ref = "moshiKotlinCodegen" }
 multidex = { group = "androidx.multidex", name = "multidex" }
+ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 ui-viewbinding = { group = "androidx.compose.ui", name = "ui-viewbinding" }
 
 #Accompanist

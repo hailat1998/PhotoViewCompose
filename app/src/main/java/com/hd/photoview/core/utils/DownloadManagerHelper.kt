@@ -36,39 +36,39 @@ class DownloadManagerHelper @Inject constructor(@ApplicationContext private val 
     }
 
     fun downloadFile(url: String, photo: Photo) {
-        // Create the download request
-        val downloadRequest = DownloadManager.Request(url.toUri()).apply {
-            val fileName = "${photo.description}_Unsplash_${photo.id}.jpg"
 
-            // Set notification properties
+        val downloadRequest = DownloadManager.Request(url.toUri()).apply {
+            val fileName = "${photo.description.replace("+", "_")}_Unsplash_${photo.id}.jpg"
+
+
             setTitle("Downloading ${photo.description}")
             setDescription("Downloading photo from Unsplash")
 
-            // Make notification visible during and after download
+
             setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
 
-            // Set destination
+
             setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, fileName)
             setMimeType("image/jpeg")
 
-            // Network options
+
             setAllowedOverMetered(true)
             setAllowedOverRoaming(false)
 
-            // Add additional headers if needed
+
             addRequestHeader("User-Agent", "Your App Name")
         }
 
-        // Enqueue the download and get the download ID
+
         val downloadId = downloadManager.enqueue(downloadRequest)
 
-        // Register a receiver to track download progress and completion
+
         val receiver = object : BroadcastReceiver() {
             override fun onReceive(context: Context?, intent: Intent?) {
                 val id = intent?.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1) ?: -1
 
                 if (id == downloadId) {
-                    // Check download status
+
                     val query = DownloadManager.Query().setFilterById(downloadId)
                     val cursor = downloadManager.query(query)
 
@@ -78,24 +78,24 @@ class DownloadManagerHelper @Inject constructor(@ApplicationContext private val 
 
                         when (status) {
                             DownloadManager.STATUS_SUCCESSFUL -> {
-                                // Show completion notification with action to open the file
+
                                 showDownloadCompleteNotification(downloadId, photo)
                             }
                             DownloadManager.STATUS_FAILED -> {
-                                // Show failure notification
+
                                 showDownloadFailedNotification(photo)
                             }
                         }
                     }
                     cursor.close()
 
-                    // Unregister receiver after completion
+
                     context?.unregisterReceiver(this)
                 }
             }
         }
 
-        // Register for download completion
+
         ContextCompat.registerReceiver(
             context,
             receiver,
@@ -103,7 +103,7 @@ class DownloadManagerHelper @Inject constructor(@ApplicationContext private val 
             ContextCompat.RECEIVER_NOT_EXPORTED
         )
 
-        // Start tracking progress for custom notification updates
+
         startProgressTracking(downloadId, photo)
     }
 
@@ -131,18 +131,18 @@ class DownloadManagerHelper @Inject constructor(@ApplicationContext private val 
                             0
                         }
 
-                        // Update notification with progress
+
                         updateProgressNotification(photo, progress, bytesDownloaded, bytesTotal, status == DownloadManager.STATUS_PAUSED)
 
-                        // Continue tracking if still downloading
-                        handler.postDelayed(this, 500) // Update every 500ms
+
+                        handler.postDelayed(this, 500)
                     }
                 }
                 cursor.close()
             }
         }
 
-        // Start progress tracking
+
         handler.post(progressRunnable)
     }
 
@@ -185,7 +185,7 @@ class DownloadManagerHelper @Inject constructor(@ApplicationContext private val 
     }
 
     private fun showDownloadCompleteNotification(downloadId: Long, photo: Photo) {
-        // Get the file URI from the download manager
+
         val query = DownloadManager.Query().setFilterById(downloadId)
         val cursor = downloadManager.query(query)
 
@@ -194,7 +194,7 @@ class DownloadManagerHelper @Inject constructor(@ApplicationContext private val 
             val uriString = cursor.getString(columnIndex)
             val uri = uriString.toUri()
 
-            // Create intent to open the file
+
             val file = File(uri.path!!)
             val fileUri =
                 FileProvider.getUriForFile(
@@ -216,7 +216,7 @@ class DownloadManagerHelper @Inject constructor(@ApplicationContext private val 
                 android.app.PendingIntent.FLAG_IMMUTABLE
             )
 
-            // Build the notification
+
             val builder = NotificationCompat.Builder(context, channelId)
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
                 .setContentTitle("Download Complete")
