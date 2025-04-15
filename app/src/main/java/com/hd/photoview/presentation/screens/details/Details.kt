@@ -165,9 +165,17 @@ fun SharedTransitionScope.PhotoDetail(photo: Photo,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Text(
-                                    text = "ID: ${photo.id}",
+                                    text = "username: ${photo.username}",
                                     style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier
+                                        .sharedElement(
+                                            state = rememberSharedContentState("text/${photo.username}"),
+                                            animatedVisibilityScope = animatedVisibilityScope,
+                                            boundsTransform = { _, _ ->
+                                                tween(durationMillis = 700)
+                                            }
+                                        )
                                 )
 
 

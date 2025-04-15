@@ -15,7 +15,6 @@ import javax.inject.Singleton
 
 @Singleton
 class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : UnsplashApi,
-                                              @ApplicationContext private val context: Context,
                                               private val downloadManagerHelper: DownloadManagerHelper
                                              ) : PhotoRepository {
 
@@ -33,7 +32,14 @@ class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : Unsplash
                                                      config = PagingConfig(pageSize = 30,
                                                          enablePlaceholders = true,
                                                          prefetchDistance = 5),
-                                                     pagingSourceFactory = { PhotoPagingSource(unsplashApi , query) }
+                                                     pagingSourceFactory = { PhotoPagingSource(unsplashApi , query = query) }
+                                                 ).flow
+
+                                                 override fun userPhotosPaging(usename: String): Flow<PagingData<Photo>> = Pager(
+                                                     config = PagingConfig(pageSize = 30,
+                                                         enablePlaceholders = true,
+                                                         prefetchDistance = 5),
+                                                     pagingSourceFactory = { PhotoPagingSource(unsplashApi , query = query) }
                                                  ).flow
 
     override fun enqueueDownload(photo: Photo, selected: String) {
@@ -45,4 +51,6 @@ class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : Unsplash
         }
         downloadManagerHelper.downloadFile(url, photo)
     }
+
+
 }

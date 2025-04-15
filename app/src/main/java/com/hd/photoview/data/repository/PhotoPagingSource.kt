@@ -14,34 +14,41 @@ import java.io.IOException
 import javax.inject.Inject
 
 
-class PhotoPagingSource @Inject constructor(private val unsplashApi: UnsplashApi, private val query: String = ""):
+
+
+class PhotoPagingSource @Inject constructor(private val unsplashApi: UnsplashApi,
+                                            private val query: String = "",
+                                            private val  username: String = ""):
     PagingSource<Int , Photo>() {
     @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Photo> {
-       return try{
+        return try{
             val nextPageNumber = params.key ?: 1
-            val response  = if (query.isEmpty()) { unsplashApi.fetchPhotos (nextPageNumber).map { it.toPhoto() }
+            val response: List<Photo> = if (query.isNotEmpty()) {
+                unsplashApi.searchPhoto(query, nextPageNumber).photoItems.map { it.toPhoto() }
+            } else if (username.isNotEmpty()) {
+                unsplashApi.getUserPhotos(username, nextPageNumber).map { it.toPhoto() }
             } else {
-                unsplashApi.searchPhoto(query, nextPageNumber).photoItems.map{it.toPhoto()}
+                unsplashApi.fetchPhotos(nextPageNumber).map { it.toPhoto() }
             }
 
-           Log.i("PAGING", "load called")
+            Log.i("PAGING", "load called")
 
-             LoadResult.Page(
+            LoadResult.Page(
                 data = response,
                 prevKey = if(nextPageNumber == 1) null else nextPageNumber - 1,
                 nextKey = nextPageNumber + 1
             )
-        }catch (e: IOException) {
-           Log.e("PAGING", "Network error: ${e.message}")
-           LoadResult.Error(e)
-       } catch (e: HttpException) {
-           Log.e("PAGING", "HTTP error: ${e.message}")
-           LoadResult.Error(e)
-       } catch (e: Exception) {
-           Log.e("PAGING", "Unknown error: ${e.message}")
-           LoadResult.Error(e)
-       }
+        } catch (e: IOException) {
+            Log.e("PAGING", "Network error: ${e.message}")
+            LoadResult.Error(e)
+        } catch (e: HttpException) {
+            Log.e("PAGING", "HTTP error: ${e.message}")
+            LoadResult.Error(e)
+        } catch (e: Exception) {
+            Log.e("PAGING", "Unknown error: ${e.message}")
+            LoadResult.Error(e)
+        }
     }
 
 

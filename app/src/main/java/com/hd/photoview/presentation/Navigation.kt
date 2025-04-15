@@ -26,6 +26,8 @@ import com.hd.photoview.presentation.screens.home.HomeScreen
 import com.hd.photoview.presentation.screens.home.HomeScreenViewModel
 import com.hd.photoview.presentation.screens.search.SearchScreen
 import com.hd.photoview.presentation.screens.search.SearchViewModel
+import com.hd.photoview.presentation.screens.user.UserScreen
+import com.hd.photoview.presentation.screens.user.UserViewModel
 import com.hd.photoview.presentation.utils.toDecoded
 import kotlin.reflect.typeOf
 
@@ -61,6 +63,36 @@ fun MainHost(navHostController: NavHostController) {
                     },
                     animatedVisibilityScope = this
                 )
+            }
+
+            composable<Routes.UserScreen>(
+                typeMap =
+                mapOf(typeOf<Photo>() to CustomNavType(Photo::class.java, Photo.serializer())),
+                enterTransition = {
+                    return@composable slideIntoContainer(
+                        AnimatedContentTransitionScope.SlideDirection.Start,
+                        tween(ANIMATION_DURATION)
+                    )
+                },
+                popExitTransition = {
+                    return@composable slideOutOfContainer(
+                        AnimatedContentTransitionScope.SlideDirection.End,
+                        tween(ANIMATION_DURATION)
+                    )
+                }
+            ) { backStackEntry ->
+
+                val arg = backStackEntry.toRoute<Routes.UserScreen>()
+                val viewModel: UserViewModel = hiltViewModel()
+                val photosData = remember { viewModel.userPhotos(arg.photo.username) }
+
+                UserScreen(photosData,arg.photo, this){ photo ->
+                    val decodedPhoto = photo.toDecoded()
+                    navHostController.navigate(Routes.DetailScreen(decodedPhoto))
+                    {
+                        restoreState = true
+                    }
+                }
             }
 
             composable<Routes.Search>(
@@ -121,6 +153,7 @@ fun MainHost(navHostController: NavHostController) {
                     )
                 }
             ) { backStackEntry ->
+
                 val arg = backStackEntry.toRoute<Routes.WebScreen>()
                 WebView(id = arg.id, desc = arg.alt_desc)
             }
@@ -138,7 +171,8 @@ fun MainHost(navHostController: NavHostController) {
                         AnimatedContentTransitionScope.SlideDirection.End,
                         tween(ANIMATION_DURATION)
                     )
-                }) { backStackEntry ->
+                }
+            ) { backStackEntry ->
 
                 val viewModel = hiltViewModel<DetailsViewModel>()
 

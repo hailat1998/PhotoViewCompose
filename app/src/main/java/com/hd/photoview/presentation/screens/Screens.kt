@@ -23,6 +23,9 @@ sealed class Routes{
     data class WebScreen(val alt_desc: String, val id: String): Routes()
 
     @Serializable
+    data class UserScreen(val photo: Photo): Routes()
+
+    @Serializable
     data class DetailScreen(val photo: Photo): Routes()
 
 }
@@ -35,7 +38,7 @@ class CustomNavType<T : Parcelable>(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             bundle.getParcelable(key, clazz) as T
         } else {
-            @Suppress("DEPRECATION") // for backwards compatibility
+            @Suppress("DEPRECATION")
             bundle.getParcelable(key)
         }
 

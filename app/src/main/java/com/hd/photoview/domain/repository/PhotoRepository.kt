@@ -14,4 +14,5 @@ interface PhotoRepository {
    // fun searchPhoto(query : String): Flow<Resources<Result>>
     fun searchPhotoPaging(query: String): Flow<PagingData<Photo>>
     fun enqueueDownload(photo: Photo, selected: String)
+    fun userPhotosPaging(usename: String): Flow<PagingData<Photo>>
 }

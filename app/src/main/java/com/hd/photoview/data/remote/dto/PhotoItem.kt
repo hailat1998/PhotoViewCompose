@@ -5,4 +5,6 @@ import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
 data class PhotoItem(val urls: Urls,
-                     @Json(name = "alt_description") val description : String?, val id : String )
+                     @Json(name = "alt_description") val description : String?,
+                     val id : String,
+                     val user: User )
