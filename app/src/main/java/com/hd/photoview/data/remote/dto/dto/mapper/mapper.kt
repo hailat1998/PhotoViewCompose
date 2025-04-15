@@ -9,7 +9,6 @@ fun PhotoItem.toPhoto(): Photo {
         full= this.urls.full,
         regular = this.urls.regular,
         small = this.urls.small,
-        username = this.user.username.username
+        username = this.user.username
         )
-
 }

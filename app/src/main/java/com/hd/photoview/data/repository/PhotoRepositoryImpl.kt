@@ -39,7 +39,7 @@ class PhotoRepositoryImpl @Inject constructor(private val unsplashApi : Unsplash
                                                      config = PagingConfig(pageSize = 30,
                                                          enablePlaceholders = true,
                                                          prefetchDistance = 5),
-                                                     pagingSourceFactory = { PhotoPagingSource(unsplashApi , query = query) }
+                                                     pagingSourceFactory = { PhotoPagingSource(unsplashApi , username = usename) }
                                                  ).flow
 
     override fun enqueueDownload(photo: Photo, selected: String) {

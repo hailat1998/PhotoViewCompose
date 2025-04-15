@@ -11,10 +11,6 @@ import dagger.hilt.android.HiltAndroidApp
 @HiltAndroidApp
 class App : Application(), ImageLoaderFactory {
 
-    override fun onCreate() {
-        super.onCreate()
-    }
-
     override fun newImageLoader(): ImageLoader {
         return ImageLoader.Builder(this)
             .memoryCache {
@@ -30,5 +26,4 @@ class App : Application(), ImageLoaderFactory {
             }
                  .build()
     }
-
 }

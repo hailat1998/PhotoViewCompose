@@ -188,7 +188,10 @@ fun TopBrSearch(query: MutableState<String>, onSearch: () -> Unit, onBack: () ->
                 )
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors().copy(containerColor = MaterialTheme.colorScheme.surface)
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        )
     )
 }
 

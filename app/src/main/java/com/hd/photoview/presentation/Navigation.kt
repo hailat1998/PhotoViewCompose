@@ -1,7 +1,6 @@
 package com.hd.photoview.presentation
 
 import android.os.Build
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -116,7 +115,7 @@ fun MainHost(navHostController: NavHostController) {
                 val searchTrigger = remember { mutableIntStateOf(0) }
 
                 val photos = remember(searchTrigger.value) {
-                    Log.i("SEARCH", "${searchTrigger.value}")
+
                     viewModel.searchPhotoList(queryState.value)
                 }
 
@@ -184,7 +183,14 @@ fun MainHost(navHostController: NavHostController) {
                     toWeb = { id, altDesc ->
                     navHostController.navigate(Routes.WebScreen(id, altDesc))
                 },
-                    animatedVisibilityScope = this
+                    animatedVisibilityScope = this,
+                    toUser = { photo ->
+                        val decodedPhoto = photo.toDecoded()
+                        navHostController.navigate(Routes.UserScreen(decodedPhoto))
+                        {
+                            restoreState = true
+                        }
+                    }
                 )
             }
         }

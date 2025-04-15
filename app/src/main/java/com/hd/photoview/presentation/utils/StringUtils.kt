@@ -10,7 +10,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 fun Photo.toDecoded(): Photo {
     return Photo(id = this.id.encodeString(), description = this.description.encodeString()
-        ,full = this.full.encodeString(), small = this.small.encodeString(), regular = this.regular.encodeString())
+        ,full = this.full.encodeString(), small = this.small.encodeString(), regular = this.regular.encodeString(), username = this.username.encodeString())
 }
 
 

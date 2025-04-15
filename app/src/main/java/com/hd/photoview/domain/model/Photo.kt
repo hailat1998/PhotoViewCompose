@@ -11,7 +11,9 @@ import kotlinx.serialization.Serializable
 @Immutable
 @Serializable
 @Parcelize
-data class Photo(val id: String, val small: String,
-                 val full:String, val regular: String,
+data class Photo(val id: String,
+                 val small: String,
+                 val full:String,
+                 val regular: String,
                  val description: String,
                  val username: String): Parcelable

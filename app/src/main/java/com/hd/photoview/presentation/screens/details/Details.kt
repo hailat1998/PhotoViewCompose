@@ -13,6 +13,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.rememberTransformableState
 import androidx.compose.foundation.gestures.transformable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenuItem
@@ -56,6 +58,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -67,6 +70,7 @@ import com.hd.photoview.domain.model.Photo
 fun SharedTransitionScope.PhotoDetail(photo: Photo,
                                       onEvent: (DetailsEvent) -> Unit,
                                       toWeb: (desc: String, id: String) -> Unit,
+                                      toUser: (photo: Photo) -> Unit,
                                       animatedVisibilityScope: AnimatedVisibilityScope,
                                       ) {
 
@@ -106,7 +110,7 @@ fun SharedTransitionScope.PhotoDetail(photo: Photo,
 
             AsyncImage(
                 model = photo.small,
-                contentDescription = photo.description ?: "Photo",
+                contentDescription = photo.description ,
                 contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxSize()
@@ -139,7 +143,7 @@ fun SharedTransitionScope.PhotoDetail(photo: Photo,
                                 .padding(16.dp)
                         ) {
 
-                            if (!photo.description.isNullOrBlank()) {
+                            if (photo.description.isNotBlank()) {
                                 Text(
                                     text = photo.description.replace("+", " "),
                                     style = MaterialTheme.typography.titleMedium,
@@ -158,7 +162,6 @@ fun SharedTransitionScope.PhotoDetail(photo: Photo,
                                 Spacer(modifier = Modifier.height(8.dp))
                             }
 
-
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -166,8 +169,10 @@ fun SharedTransitionScope.PhotoDetail(photo: Photo,
                             ) {
                                 Text(
                                     text = "username: ${photo.username}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    style = MaterialTheme.typography.bodySmall.copy(
+                                        color = MaterialTheme.colorScheme.primary, // blue-ish
+                                        textDecoration = TextDecoration.Underline
+                                    ),
                                     modifier = Modifier
                                         .sharedElement(
                                             state = rememberSharedContentState("text/${photo.username}"),
@@ -176,14 +181,19 @@ fun SharedTransitionScope.PhotoDetail(photo: Photo,
                                                 tween(durationMillis = 700)
                                             }
                                         )
+                                        .clickable(
+                                            indication = rememberRipple(),
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        ) {
+                                            toUser.invoke(photo)
+                                        }
                                 )
-
 
                                 Card(
                                     modifier = Modifier
                                         .clip(CircleShape)
                                         .clickable {
-                                            toWeb.invoke(photo.description ?: "", photo.id)
+                                            toWeb.invoke(photo.description , photo.id)
                                         },
                                     colors = CardDefaults.cardColors(
                                         containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -219,7 +229,7 @@ fun SharedTransitionScope.PhotoDetail(photo: Photo,
                     ) {
                         AsyncImage(
                             model = photo.small,
-                            contentDescription = photo.description ?: "Photo",
+                            contentDescription = photo.description ,
                             contentScale = ContentScale.Fit,
                             modifier = Modifier
                                 .fillMaxSize()
@@ -291,7 +301,7 @@ fun SharedTransitionScope.PhotoDetail(photo: Photo,
                                             .height(50.dp)
                                             .fillMaxWidth(),
                                         textStyle = MaterialTheme.typography.bodyMedium,
-                                        shape = RoundedCornerShape(20.dp),
+                                        shape = RoundedCornerShape(12.dp),
                                         colors = TextFieldDefaults.textFieldColors(
                                             containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
                                             focusedIndicatorColor = Color.Transparent,

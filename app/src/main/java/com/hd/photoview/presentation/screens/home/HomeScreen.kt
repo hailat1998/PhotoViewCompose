@@ -114,6 +114,7 @@ fun SharedTransitionScope.HomeScreen(
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeTopBar(toSearch: () -> Unit) {
@@ -126,7 +127,10 @@ fun HomeTopBar(toSearch: () -> Unit) {
             )
         },
         actions = {
-            IconButton(onClick = { toSearch() }) {
+            IconButton(
+                onClick = toSearch,
+                modifier = Modifier.padding(end = 8.dp) // 👈 Reduced padding
+            ) {
                 Icon(
                     imageVector = Icons.Default.Search,
                     contentDescription = "Search",
@@ -178,7 +182,6 @@ private fun EmptyContent() {
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center
         )
-
     }
 }
 
@@ -242,7 +245,7 @@ fun SharedTransitionScope.PhotoGrid(
     ) {
         items(
             count = photos.itemCount,
-            //key = { index -> photos[index]?.id ?: index }
+            //key = { index -> photos[index]?.id ?: index }     // There are duplicate photos in sequential pages
         ) { index ->
             photos[index]?.let { photo ->
                 ImageItem(photo.small, photo, toDetail = toDetail, animatedVisibilityScope)
