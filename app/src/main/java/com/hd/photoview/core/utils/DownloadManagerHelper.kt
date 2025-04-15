@@ -150,7 +150,7 @@ class DownloadManagerHelper @Inject constructor(@ApplicationContext private val 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val name = "Downloads"
             val description = "Download notifications"
-            val importance = NotificationManager.IMPORTANCE_LOW // LOW importance prevents sound for progress updates
+            val importance = NotificationManager.IMPORTANCE_LOW
 
             val channel = NotificationChannel(channelId, name, importance).apply {
                 this.description = description
@@ -225,7 +225,7 @@ class DownloadManagerHelper @Inject constructor(@ApplicationContext private val 
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent)
 
-            notificationManager.notify(notificationId + 1, builder.build()) // Use different ID to avoid replacing progress notification
+            notificationManager.notify(notificationId + 1, builder.build())
         }
         cursor.close()
     }
@@ -238,7 +238,7 @@ class DownloadManagerHelper @Inject constructor(@ApplicationContext private val 
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setAutoCancel(true)
 
-        notificationManager.notify(notificationId + 2, builder.build()) // Use different ID
+        notificationManager.notify(notificationId + 2, builder.build())
     }
 
     private fun formatFileSize(size: Long): String {

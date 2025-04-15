@@ -32,7 +32,6 @@ class PhotoPagingSource @Inject constructor(private val unsplashApi: UnsplashApi
                 unsplashApi.fetchPhotos(nextPageNumber).map { it.toPhoto() }
             }
 
-            Log.i("PAGING", "load called")
 
             LoadResult.Page(
                 data = response,

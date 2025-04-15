@@ -266,10 +266,11 @@ fun SharedTransitionScope.PhotoDetail(photo: Photo,
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp),
+                                .padding(10.dp),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
+
 
                             Row(
                                 modifier = Modifier.weight(1f),
@@ -345,7 +346,7 @@ fun SharedTransitionScope.PhotoDetail(photo: Photo,
                                 )
                             ) {
                                 Row(
-                                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 12.dp),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Icon(

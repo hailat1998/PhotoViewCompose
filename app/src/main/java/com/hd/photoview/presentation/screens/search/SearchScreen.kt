@@ -147,9 +147,9 @@ fun TopBrSearch(query: MutableState<String>, onSearch: () -> Unit, onBack: () ->
                     onValueChange = { newText -> query.value = newText },
                     textStyle = TextStyle(
                         color = MaterialTheme.colorScheme.onSurface,
-                        fontSize = 14.sp, // Reduced font size
+                        fontSize = 14.sp,
                         fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
-                        baselineShift = BaselineShift.None // Adjusts the baseline
+                        baselineShift = BaselineShift.None
                     ),
                     cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
@@ -163,7 +163,7 @@ fun TopBrSearch(query: MutableState<String>, onSearch: () -> Unit, onBack: () ->
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(40.dp) // Fixed height of 40.dp
+                                .height(40.dp)
                                 .background(
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                     shape = RoundedCornerShape(20.dp)
