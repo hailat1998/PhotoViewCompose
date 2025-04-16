@@ -50,12 +50,14 @@
 
 ## 📱 Screenshots
 
-![ScreenShot](ScreenShots/Screenshot_1.jpg)
-![ScreenShot](ScreenShots/Screenshot_2.jpg)
-![ScreenShot](ScreenShots/Screenshot_3.jpg)
-![ScreenShot](ScreenShots/Screenshot_4.jpg)
-![ScreenShot](ScreenShots/Screenshot_5.jpg)
-![ScreenShot](ScreenShots/Screenshot_6.jpg)
+| Screenshot 1                                 | Screenshot 2                                 | Screenshot 3                                 |
+|----------------------------------------------|----------------------------------------------|----------------------------------------------|
+| <img src="ScreenShots/Screenshot_1.jpg" width="248"/> | <img src="ScreenShots/Screenshot_2.jpg" width="248"/> | <img src="ScreenShots/Screenshot_3.jpg" width="248"/> |
+
+| Screenshot 4                                 | Screenshot 5                                 | Screenshot 6                                 |
+|----------------------------------------------|----------------------------------------------|----------------------------------------------|
+| <img src="ScreenShots/Screenshot_4.jpg" width="248"/> | <img src="ScreenShots/Screenshot_5.jpg" width="248"/> | <img src="ScreenShots/Screenshot_6.jpg" width="248"/> |
+
 
 
 
